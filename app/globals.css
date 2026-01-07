@@ -1,0 +1,32 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Chewy&display=swap");
+
+@import "tailwindcss";
+
+/* =====================
+   CSS VARIABLES
+===================== */
+:root {
+  /* BRAND COLORS */
+  --primary-bg: #1f3d2b; /* Deep Forest Green */
+  --secondary-bg: #f6f8f5; /* Off White Background */
+
+  --primary-color: #c9a24d; /* Luxury Gold (Accent) */
+  --secondary-color: #8fbfa3; /* Sage Green */
+
+  /* TEXT COLORS */
+  --text-primary: #1e1e1e; /* Main Text */
+  --text-light: #ffffff; /* White Text */
+  --text-muted: #9dafa3; /* Muted / Subtext */
+
+  /* BORDERS & UI */
+  --border-color: #d6e2da;
+  --hover-bg: #163023;
+
+  /* FONTS */
+  --font-heading: "Playfair Display", serif;
+  --font-body: "Inter", sans-serif;
+}
+
+.font-heading {
+  font-family: var(--font-heading);
+}
