@@ -87,18 +87,6 @@ export default function Navbar() {
                   >
                     Sell Property
                   </Link>
-                  <Link
-                    href="/lease-property"
-                    className="block px-5 py-3 text-black hover:text-[var(--primary-color)]  hover:bg-[var(--primary-bg)] transition"
-                  >
-                    Lease Property
-                  </Link>
-                  <Link
-                    href="/rent-property"
-                    className="block px-5 py-3 text-black hover:text-[var(--primary-color)]  hover:bg-[var(--primary-bg)] transition"
-                  >
-                    Rent Property
-                  </Link>
                 </div>
               )}
             </li>

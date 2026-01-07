@@ -1,178 +1,222 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { Facebook, Twitter, Instagram } from "lucide-react";
-import hero1 from "../assets/hero/hero1.jpg";
-import hero2 from "../assets/hero/hero2.jpg";
-import hero3 from "../assets/hero/hero3.jpg";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
+import hero1 from "../assets/hero/hero4.jpg";
+import hero2 from "../assets/hero/hero5.jpg";
+import hero3 from "../assets/hero/hero6.jpg";
 
 const slides = [
   {
-    img: hero1,
-    tag: "Lorem Ipsum Dolor",
-    title: "Lorem ipsum dolor\nsit amet consectetur",
-    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    image: hero1,
+    tag: "Premium Real Estate",
+    title: "Spaces That Reflect\nYour Way of Living",
+    desc: "Curated homes, prime plots, and investment opportunities in high-growth locations.",
   },
   {
-    img: hero2,
+    image: hero2,
     tag: "Luxury Living",
-    title: "Sed do eiusmod\ntempor incididunt",
-    desc: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+    title: "Designed for Comfort\nBuilt for the Future",
+    desc: "Thoughtfully planned residences offering lifestyle, security, and long-term value.",
   },
   {
-    img: hero3,
-    tag: "Premium Projects",
-    title: "Duis aute irure\ndolor in reprehenderit",
-    desc: "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-  },
-];
-
-const socialLinks = [
-  {
-    name: "Facebook",
-    href: "https://www.facebook.com/",
-    icon: Facebook,
-  },
-  {
-    name: "Twitter",
-    href: "https://twitter.com/",
-    icon: Twitter,
-  },
-  {
-    name: "Instagram",
-    href: "https://www.instagram.com/",
-    icon: Instagram,
+    image: hero3,
+    tag: "Trusted Developments",
+    title: "Invest with Confidence\nLive with Pride",
+    desc: "A portfolio of verified projects across the most promising destinations.",
   },
 ];
 
 export default function HeroSlider() {
   const [index, setIndex] = useState(0);
+  const [animating, setAnimating] = useState(false);
 
-  // ⏳ Increased stop time
+  const nextSlide = () => {
+    if (animating) return;
+    setAnimating(true);
+    setIndex((prev) => (prev + 1) % slides.length);
+    setTimeout(() => setAnimating(false), 1200);
+  };
+
+  const prevSlide = () => {
+    if (animating) return;
+    setAnimating(true);
+    setIndex((prev) => (prev - 1 + slides.length) % slides.length);
+    setTimeout(() => setAnimating(false), 1200);
+  };
+
   useEffect(() => {
-    const timer = setInterval(
-      () => setIndex((prev) => (prev + 1) % slides.length),
-      6500
-    );
-    return () => clearInterval(timer);
+    const interval = setInterval(nextSlide, 7000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
-    <section className="relative h-[75vh] lg:h-screen overflow-hidden">
-      {/* INLINE ANIMATION STYLES */}
-      <style jsx>{`
-        @keyframes luxurySlide {
-          0% {
-            opacity: 0;
-            transform: translateX(-140px) skewX(-6deg);
-            filter: blur(8px);
-          }
-          55% {
-            opacity: 1;
-            transform: translateX(24px) skewX(1.5deg);
-            filter: blur(2px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateX(0) skewX(0);
-            filter: blur(0);
-          }
-        }
+    <section className="relative h-screen w-full overflow-hidden">
+      {/* IMAGE STACK */}
+      <div className="absolute inset-0">
+        <Image
+          src={slides[index].image}
+          alt="Shivaksh Real Estate"
+          fill
+          priority
+          className="object-cover"
+        />
 
-        /* 🐢 Slower, smoother animation */
-        .lux-slide {
-          animation: luxurySlide 1.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-        }
+        {/* DARK OVERLAY */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/45 to-black/25" />
 
-        /* Increased stagger for readability */
-        .delay-1 {
-          animation-delay: 0.35s;
-        }
-        .delay-2 {
-          animation-delay: 0.65s;
-        }
-        .delay-3 {
-          animation-delay: 0.95s;
-        }
-      `}</style>
-
-      {/* BACKGROUND SLIDES */}
-      {slides.map((slide, i) => (
+        {/* LIGHT SWEEP TRANSITION */}
         <div
-          key={i}
-          className={`absolute inset-0 transition-opacity duration-[1500ms] ${
-            index === i ? "opacity-100 z-10" : "opacity-0 z-0"
+          className={`absolute inset-0 pointer-events-none ${
+            animating ? "animate-sweep" : ""
           }`}
-        >
-          <Image
-            src={slide.img}
-            alt="Luxury Real Estate"
-            fill
-            priority={i === 0}
-            className={`object-cover transition-transform duration-[8000ms] ${
-              index === i ? "scale-100" : "scale-110"
-            }`}
-          />
-          <div className="absolute inset-0 bg-white/10" />
-        </div>
-      ))}
-
-      {/* LEFT SOCIAL ICONS */}
-      <div className="absolute left-6 bottom-10 z-30 hidden md:flex flex-col gap-4 text-white">
-        {socialLinks.map((item, i) => {
-          const Icon = item.icon;
-
-          return (
-            <Link
-              key={i}
-              href={item.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={item.name}
-              className="w-10 h-10 cursor-pointer flex items-center justify-center border border-white/30 rounded-full hover:bg-white hover:text-black transition"
-            >
-              <Icon size={18} />
-            </Link>
-          );
-        })}
+        />
       </div>
 
       {/* CONTENT */}
       <div className="relative z-20 h-full flex items-center">
         <div className="w-11/12 md:w-5/6 mx-auto text-white">
-          <p
+          <span
             key={`tag-${index}`}
-            className="uppercase tracking-widest text-sm mb-4 lux-slide"
+            className="inline-block mb-6 px-4 py-1 text-xs tracking-[0.35em] uppercase border border-white/40 animate-tag"
           >
             {slides[index].tag}
-          </p>
+          </span>
 
           <h1
             key={`title-${index}`}
-            className="text-4xl md:text-6xl font-bold leading-tight mb-6 whitespace-pre-line lux-slide delay-1"
+            className="text-4xl md:text-6xl xl:text-7xl font-bold leading-tight max-w-4xl animate-title delay-200"
           >
-            {slides[index].title}
+            {slides[index].title.split("\n").map((line, i) => (
+              <span
+                key={i}
+                className={
+                  i === 1 ? "text-[var(--primary-color)] block" : "block"
+                }
+              >
+                {line}
+              </span>
+            ))}
           </h1>
 
           <p
             key={`desc-${index}`}
-            className="max-w-xl text-gray-200 mb-10 lux-slide delay-2"
+            className="mt-6 max-w-xl text-white/80 text-lg animate-desc delay-400"
           >
             {slides[index].desc}
           </p>
 
-          <Link href="/contact">
-            <button
-              key={`btn-${index}`}
-              className="px-8 py-4 bg-white text-black font-semibold tracking-wide hover:bg-gray-200 transition lux-slide delay-3"
+          <div
+            key={`cta-${index}`}
+            className="mt-10 flex gap-6 animate-cta delay-600"
+          >
+            <Link
+              href="/projects"
+              className="px-9 py-4 bg-[var(--primary-color)] text-[var(--primary-bg)] font-semibold tracking-wide hover:opacity-90 transition"
             >
-              GET IN TOUCH →
-            </button>
-          </Link>
+              View Projects
+            </Link>
+
+            <Link
+              href="/contact"
+              className="px-9 py-4 border border-white/60 text-white font-semibold tracking-wide hover:bg-white hover:text-black transition"
+            >
+              Book Consultation
+            </Link>
+          </div>
         </div>
       </div>
+
+      {/* ARROWS */}
+      <button
+        onClick={prevSlide}
+        className="absolute left-6 top-1/2 -translate-y-1/2 z-30 w-12 h-12 border border-white/40 rounded-full flex items-center justify-center text-white hover:bg-white hover:text-black transition"
+      >
+        <ChevronLeft size={22} />
+      </button>
+
+      <button
+        onClick={nextSlide}
+        className="absolute right-6 top-1/2 -translate-y-1/2 z-30 w-12 h-12 border border-white/40 rounded-full flex items-center justify-center text-white hover:bg-white hover:text-black transition"
+      >
+        <ChevronRight size={22} />
+      </button>
+
+      {/* ANIMATIONS */}
+      <style jsx>{`
+        /* TEXT ANIMATIONS */
+        .animate-tag {
+          animation: fadeIn 1s ease both;
+        }
+
+        .animate-title {
+          animation: riseIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .animate-desc {
+          animation: riseIn 1.2s ease both;
+        }
+
+        .animate-cta {
+          animation: riseIn 1.2s ease both;
+        }
+
+        .delay-200 {
+          animation-delay: 0.2s;
+        }
+        .delay-400 {
+          animation-delay: 0.4s;
+        }
+        .delay-600 {
+          animation-delay: 0.6s;
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        @keyframes riseIn {
+          from {
+            opacity: 0;
+            transform: translateY(32px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        /* LIGHT SWEEP */
+        .animate-sweep::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            120deg,
+            transparent 30%,
+            rgba(255, 255, 255, 0.18),
+            transparent 70%
+          );
+          animation: sweep 1.2s ease-in-out;
+        }
+
+        @keyframes sweep {
+          from {
+            transform: translateX(-100%);
+          }
+          to {
+            transform: translateX(100%);
+          }
+        }
+      `}</style>
     </section>
   );
 }

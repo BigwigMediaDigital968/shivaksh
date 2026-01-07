@@ -8,6 +8,7 @@ import "aos/dist/aos.css";
 import PopupForm from "./components/Popup";
 import Footer from "./components/Footer";
 import MiniNavbar from "./components/MiniNavbar";
+import PropertyCategories from "./components/home/PropertyCategories";
 
 export default function Home() {
   const [openPopup, setOpenPopup] = useState(false);
@@ -32,6 +33,7 @@ export default function Home() {
       <MiniNavbar />
       <Navbar />
       <HeroSlider />
+      <PropertyCategories />
       <Footer />
       <PopupForm open={openPopup} onClose={() => setOpenPopup(false)} />
     </div>
