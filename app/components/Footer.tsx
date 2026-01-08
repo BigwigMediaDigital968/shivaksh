@@ -12,7 +12,7 @@ import {
   Linkedin,
   Youtube,
 } from "lucide-react";
-import footerBg from "../assets/Veedoo-pattern-light.png";
+import footerBg from "../assets/footer-bg.jpg";
 import home from "../assets/contact-img.png";
 
 export default function Footer() {

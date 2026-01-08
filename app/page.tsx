@@ -9,6 +9,11 @@ import PopupForm from "./components/Popup";
 import Footer from "./components/Footer";
 import MiniNavbar from "./components/MiniNavbar";
 import PropertyCategories from "./components/home/PropertyCategories";
+import WhyChooseUs from "./components/home/WhyChooseUs";
+import FinalCTA from "./components/FinalCta";
+import Testimonials from "./components/home/Testimonial";
+import BlogSection from "./components/home/Blog";
+import FAQSection from "./components/home/Faq";
 
 export default function Home() {
   const [openPopup, setOpenPopup] = useState(false);
@@ -34,6 +39,11 @@ export default function Home() {
       <Navbar />
       <HeroSlider />
       <PropertyCategories />
+      <WhyChooseUs />
+      <Testimonials />
+      <BlogSection />
+      <FAQSection />
+      <FinalCTA />
       <Footer />
       <PopupForm open={openPopup} onClose={() => setOpenPopup(false)} />
     </div>

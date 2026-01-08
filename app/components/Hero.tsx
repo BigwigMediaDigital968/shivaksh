@@ -54,169 +54,268 @@ export default function HeroSlider() {
   }, []);
 
   return (
-    <section className="relative h-screen w-full overflow-hidden">
-      {/* IMAGE STACK */}
-      <div className="absolute inset-0">
-        <Image
-          src={slides[index].image}
-          alt="Shivaksh Real Estate"
-          fill
-          priority
-          className="object-cover"
-        />
+    <>
+      <section className="relative h-[70vh] lg:h-screen w-full overflow-hidden">
+        {/* IMAGE STACK */}
+        <div className="absolute inset-0">
+          <Image
+            src={slides[index].image}
+            alt="Shivaksh Real Estate"
+            fill
+            priority
+            className="object-cover"
+          />
 
-        {/* DARK OVERLAY */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/45 to-black/25" />
+          {/* DARK OVERLAY */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/45 to-black/25 backdrop-blur-[1px]" />
 
-        {/* LIGHT SWEEP TRANSITION */}
-        <div
-          className={`absolute inset-0 pointer-events-none ${
-            animating ? "animate-sweep" : ""
-          }`}
-        />
-      </div>
-
-      {/* CONTENT */}
-      <div className="relative z-20 h-full flex items-center">
-        <div className="w-11/12 md:w-5/6 mx-auto text-white">
-          <span
-            key={`tag-${index}`}
-            className="inline-block mb-6 px-4 py-1 text-xs tracking-[0.35em] uppercase border border-white/40 animate-tag"
-          >
-            {slides[index].tag}
-          </span>
-
-          <h1
-            key={`title-${index}`}
-            className="text-4xl md:text-6xl xl:text-7xl font-bold leading-tight max-w-4xl animate-title delay-200"
-          >
-            {slides[index].title.split("\n").map((line, i) => (
-              <span
-                key={i}
-                className={
-                  i === 1 ? "text-[var(--primary-color)] block" : "block"
-                }
-              >
-                {line}
-              </span>
-            ))}
-          </h1>
-
-          <p
-            key={`desc-${index}`}
-            className="mt-6 max-w-xl text-white/80 text-lg animate-desc delay-400"
-          >
-            {slides[index].desc}
-          </p>
-
+          {/* LIGHT SWEEP TRANSITION */}
           <div
-            key={`cta-${index}`}
-            className="mt-10 flex gap-6 animate-cta delay-600"
-          >
-            <Link
-              href="/projects"
-              className="px-9 py-4 bg-[var(--primary-color)] text-[var(--primary-bg)] font-semibold tracking-wide hover:opacity-90 transition"
-            >
-              View Projects
-            </Link>
+            className={`absolute inset-0 pointer-events-none ${
+              animating ? "animate-sweep" : ""
+            }`}
+          />
+        </div>
 
-            <Link
-              href="/contact"
-              className="px-9 py-4 border border-white/60 text-white font-semibold tracking-wide hover:bg-white hover:text-black transition"
+        {/* CONTENT */}
+        <div className="relative z-20 h-full flex items-center mt-10">
+          <div className="w-11/12 md:w-5/6 mx-auto text-white">
+            <span
+              key={`tag-${index}`}
+              className="inline-block mb-6 px-4 py-1 text-xs tracking-[0.35em] uppercase border border-white/40 animate-tag"
             >
-              Book Consultation
-            </Link>
+              {slides[index].tag}
+            </span>
+
+            <h1
+              key={`title-${index}`}
+              className="text-4xl md:text-6xl xl:text-7xl font-bold leading-tight max-w-4xl animate-title delay-200"
+            >
+              {slides[index].title.split("\n").map((line, i) => (
+                <span
+                  key={i}
+                  className={
+                    i === 1 ? "text-[var(--primary-color)] block" : "block"
+                  }
+                >
+                  {line}
+                </span>
+              ))}
+            </h1>
+
+            <p
+              key={`desc-${index}`}
+              className="mt-6 max-w-xl text-white/80 text-lg animate-desc delay-400"
+            >
+              {slides[index].desc}
+            </p>
+
+            <div
+              key={`cta-${index}`}
+              className="mt-10 flex gap-6 animate-cta delay-600"
+            >
+              <Link
+                href="/projects"
+                className="px-3 md:px-9 py-2  md:py-4 bg-[var(--primary-color)] text-[var(--primary-bg)] font-semibold tracking-wide hover:opacity-90 transition"
+              >
+                View Projects
+              </Link>
+
+              <Link
+                href="/contact"
+                className="px-3 md:px-9 py-2  md:py-4 border border-white/60 text-white font-semibold tracking-wide hover:bg-white hover:text-black transition"
+              >
+                Book Consultation
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* ARROWS */}
-      <button
-        onClick={prevSlide}
-        className="absolute left-6 top-1/2 -translate-y-1/2 z-30 w-12 h-12 border border-white/40 rounded-full flex items-center justify-center text-white hover:bg-white hover:text-black transition"
-      >
-        <ChevronLeft size={22} />
-      </button>
+        {/* ARROWS */}
+        <button
+          onClick={prevSlide}
+          className="hidden md:block absolute md:left-2 lg:left-6 top-1/2 -translate-y-1/2 z-30   text-[var(--primary-color)]/70 hover:text-[var(--primary-color)] transition"
+        >
+          <ChevronLeft size={72} />
+        </button>
 
-      <button
-        onClick={nextSlide}
-        className="absolute right-6 top-1/2 -translate-y-1/2 z-30 w-12 h-12 border border-white/40 rounded-full flex items-center justify-center text-white hover:bg-white hover:text-black transition"
-      >
-        <ChevronRight size={22} />
-      </button>
+        <button
+          onClick={nextSlide}
+          className="hidden md:block absolute md:right-2 lg:right-6 top-1/2 -translate-y-1/2 z-30   text-[var(--primary-color)]/70 hover:text-[var(--primary-color)] transition"
+        >
+          <ChevronRight size={72} />
+        </button>
 
-      {/* ANIMATIONS */}
-      <style jsx>{`
-        /* TEXT ANIMATIONS */
-        .animate-tag {
-          animation: fadeIn 1s ease both;
-        }
-
-        .animate-title {
-          animation: riseIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
-        }
-
-        .animate-desc {
-          animation: riseIn 1.2s ease both;
-        }
-
-        .animate-cta {
-          animation: riseIn 1.2s ease both;
-        }
-
-        .delay-200 {
-          animation-delay: 0.2s;
-        }
-        .delay-400 {
-          animation-delay: 0.4s;
-        }
-        .delay-600 {
-          animation-delay: 0.6s;
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
+        {/* ANIMATIONS */}
+        <style jsx>{`
+          /* TEXT ANIMATIONS */
+          .animate-tag {
+            animation: fadeIn 1s ease both;
           }
-          to {
-            opacity: 1;
-          }
-        }
 
-        @keyframes riseIn {
-          from {
-            opacity: 0;
-            transform: translateY(32px);
+          .animate-title {
+            animation: riseIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
           }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
 
-        /* LIGHT SWEEP */
-        .animate-sweep::before {
-          content: "";
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(
-            120deg,
-            transparent 30%,
-            rgba(255, 255, 255, 0.18),
-            transparent 70%
-          );
-          animation: sweep 1.2s ease-in-out;
-        }
+          .animate-desc {
+            animation: riseIn 1.2s ease both;
+          }
 
-        @keyframes sweep {
-          from {
-            transform: translateX(-100%);
+          .animate-cta {
+            animation: riseIn 1.2s ease both;
           }
-          to {
-            transform: translateX(100%);
+
+          .delay-200 {
+            animation-delay: 0.2s;
           }
-        }
-      `}</style>
-    </section>
+          .delay-400 {
+            animation-delay: 0.4s;
+          }
+          .delay-600 {
+            animation-delay: 0.6s;
+          }
+
+          @keyframes fadeIn {
+            from {
+              opacity: 0;
+            }
+            to {
+              opacity: 1;
+            }
+          }
+
+          @keyframes riseIn {
+            from {
+              opacity: 0;
+              transform: translateY(32px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+
+          /* LIGHT SWEEP */
+          .animate-sweep::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+              120deg,
+              transparent 30%,
+              rgba(255, 255, 255, 0.18),
+              transparent 70%
+            );
+            animation: sweep 1.2s ease-in-out;
+          }
+
+          @keyframes sweep {
+            from {
+              transform: translateX(-100%);
+            }
+            to {
+              transform: translateX(100%);
+            }
+          }
+        `}</style>
+      </section>
+      <section className="bg-white border-b border-[var(--border-color)]">
+        <div className="w-11/12 md:w-5/6 mx-auto py-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div>
+              <p className="font-heading text-3xl text-[var(--primary-color)]">
+                10+
+              </p>
+              <p className="text-sm font-body text-[var(--text-muted)]">
+                Years of Market Experience
+              </p>
+            </div>
+
+            <div>
+              <p className="font-heading text-3xl text-[var(--primary-color)]">
+                100%
+              </p>
+              <p className="text-sm font-body text-[var(--text-muted)]">
+                Verified Properties
+              </p>
+            </div>
+
+            <div>
+              <p className="font-heading text-3xl text-[var(--primary-color)]">
+                25+
+              </p>
+              <p className="text-sm font-body text-[var(--text-muted)]">
+                Prime Locations Covered
+              </p>
+            </div>
+
+            <div>
+              <p className="font-heading text-3xl text-[var(--primary-color)]">
+                End-to-End
+              </p>
+              <p className="text-sm font-body text-[var(--text-muted)]">
+                Buying & Investment Support
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-[var(--secondary-bg)] py-12">
+        <div className="w-11/12 md:w-5/6 mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            {/* LEFT — CONTENT */}
+            <div className="max-w-xl">
+              <p className="text-sm tracking-[0.3em] uppercase text-[var(--primary-color)] font-body">
+                Who We Are
+              </p>
+
+              <h2 className="mt-4 text-4xl md:text-5xl font-heading text-[var(--text-primary)]">
+                A Real Estate Advisory Built on Trust
+              </h2>
+
+              <p className="mt-6 text-[var(--text-muted)] font-body leading-relaxed">
+                We are a boutique real estate advisory focused on premium
+                residential, commercial, and investment properties. Our approach
+                is simple — honest guidance, verified listings, and long-term
+                value for our clients.
+              </p>
+
+              <p className="mt-4 text-[var(--text-muted)] font-body leading-relaxed">
+                With deep market knowledge and hands-on experience, we help
+                buyers, investors, and families make confident property
+                decisions without pressure or confusion.
+              </p>
+            </div>
+
+            {/* RIGHT — HIGHLIGHT BOX */}
+            <div className="border border-[var(--border-color)] p-10 bg-[var(--secondary-bg)]">
+              <p className="font-heading text-2xl text-[var(--text-primary)] mb-6">
+                Our Philosophy
+              </p>
+
+              <ul className="space-y-4 font-body text-[var(--text-muted)]">
+                <li className="flex gap-3">
+                  <span className="text-[var(--primary-color)]">—</span>
+                  Transparency over transactions
+                </li>
+                <li className="flex gap-3">
+                  <span className="text-[var(--primary-color)]">—</span>
+                  Verified properties only
+                </li>
+                <li className="flex gap-3">
+                  <span className="text-[var(--primary-color)]">—</span>
+                  Client-first advisory approach
+                </li>
+                <li className="flex gap-3">
+                  <span className="text-[var(--primary-color)]">—</span>
+                  Long-term value, not short-term sales
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
