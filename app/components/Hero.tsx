@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import hero1 from "../assets/hero/hero4.jpg";
 import hero2 from "../assets/hero/hero5.jpg";
 import hero3 from "../assets/hero/hero6.jpg";
+import PopupForm from "./Popup";
 
 const slides = [
   {
@@ -33,6 +34,7 @@ const slides = [
 export default function HeroSlider() {
   const [index, setIndex] = useState(0);
   const [animating, setAnimating] = useState(false);
+  const [openForm, setOpenForm] = useState(false);
 
   const nextSlide = () => {
     if (animating) return;
@@ -121,12 +123,12 @@ export default function HeroSlider() {
                 View Projects
               </Link>
 
-              <Link
-                href="/contact"
-                className="px-3 md:px-9 py-2  md:py-4 border border-white/60 text-white font-semibold tracking-wide hover:bg-white hover:text-black transition"
+              <button
+                onClick={() => setOpenForm(true)}
+                className="cursor-pointer px-3 md:px-9 py-2  md:py-4 border border-white/60 text-white font-semibold tracking-wide hover:bg-white hover:text-black transition"
               >
                 Book Consultation
-              </Link>
+              </button>
             </div>
           </div>
         </div>
@@ -316,6 +318,7 @@ export default function HeroSlider() {
           </div>
         </div>
       </section>
+      <PopupForm open={openForm} onClose={() => setOpenForm(false)} />
     </>
   );
 }

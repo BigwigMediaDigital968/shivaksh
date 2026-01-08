@@ -3,8 +3,11 @@
 import Link from "next/link";
 import footerBg from "../assets/Veedoo-pattern-light.png";
 import Image from "next/image";
+import { useState } from "react";
+import PopupForm from "./Popup";
 
 export default function FinalCTA() {
+  const [openForm, setOpenForm] = useState(false);
   return (
     <section className="relative bg-[var(--primary-bg)] py-12 overflow-hidden">
       <div className="absolute inset-0">
@@ -35,10 +38,10 @@ export default function FinalCTA() {
 
           {/* CTA ACTIONS */}
           <div className="mt-10 flex flex-wrap gap-6 items-center justify-center">
-            <Link
-              href="/contact"
+            <button
+              onClick={() => setOpenForm(true)}
               className="
-                px-8 py-4
+                px-8 py-4 cursor-pointer
                 bg-[var(--primary-color)]
                 text-[var(--primary-bg)]
                 font-semibold
@@ -48,7 +51,7 @@ export default function FinalCTA() {
               "
             >
               Schedule a Consultation
-            </Link>
+            </button>
 
             <Link
               href="/properties"
@@ -67,6 +70,7 @@ export default function FinalCTA() {
           </div>
         </div>
       </div>
+      <PopupForm open={openForm} onClose={() => setOpenForm(false)} />
     </section>
   );
 }
