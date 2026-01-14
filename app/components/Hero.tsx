@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import hero1 from "../assets/hero/hero4.jpg";
@@ -36,24 +36,24 @@ export default function HeroSlider() {
   const [animating, setAnimating] = useState(false);
   const [openForm, setOpenForm] = useState(false);
 
-  const nextSlide = () => {
+  const nextSlide = useCallback(() => {
     if (animating) return;
     setAnimating(true);
     setIndex((prev) => (prev + 1) % slides.length);
     setTimeout(() => setAnimating(false), 1200);
-  };
+  }, [animating]);
 
-  const prevSlide = () => {
+  const prevSlide = useCallback(() => {
     if (animating) return;
     setAnimating(true);
     setIndex((prev) => (prev - 1 + slides.length) % slides.length);
     setTimeout(() => setAnimating(false), 1200);
-  };
+  }, [animating]);
 
   useEffect(() => {
     const interval = setInterval(nextSlide, 7000);
     return () => clearInterval(interval);
-  }, []);
+  }, [nextSlide]);
 
   return (
     <>

@@ -76,13 +76,13 @@ export default function Navbar() {
               {productOpen && (
                 <div className="absolute top-full left-0 bg-white w-52 border border-white/10 shadow-xl">
                   <Link
-                    href="/buy-property"
+                    href="/properties/buy"
                     className="block px-5 py-3 text-black hover:text-[var(--primary-color)]  hover:bg-[var(--primary-bg)] transition"
                   >
                     Buy Property
                   </Link>
                   <Link
-                    href="/sell-property"
+                    href="/properties/sell"
                     className="block px-5 py-3 text-black hover:text-[var(--primary-color)]  hover:bg-[var(--primary-bg)] transition"
                   >
                     Sell Property
