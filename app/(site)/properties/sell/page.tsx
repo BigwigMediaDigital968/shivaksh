@@ -1,6 +1,7 @@
 import PageHero from "../../../components/PageHero";
 import heroImg from "../../../assets/hero/hero5.jpg";
 import Link from "next/link";
+import PopupForm from "../../../components/Popup";
 
 export default function SellPropertyPage() {
   return (

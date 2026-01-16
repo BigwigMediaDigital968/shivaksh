@@ -45,7 +45,7 @@ export default function Home() {
       <BlogSection />
       <FAQSection />
       <FinalCTA />
-      <PopupForm open={openPopup} onClose={() => setOpenPopup(false)} />
+      <PopupForm open={openPopup} onClose={() => setOpenPopup(false)} purpose="" />
     </div>
   );
 }

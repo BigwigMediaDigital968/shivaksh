@@ -70,7 +70,7 @@ export default function FinalCTA() {
           </div>
         </div>
       </div>
-      <PopupForm open={openForm} onClose={() => setOpenForm(false)} />
+      <PopupForm open={openForm} onClose={() => setOpenForm(false)} purpose="" />
     </section>
   );
 }

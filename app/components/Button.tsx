@@ -9,6 +9,7 @@ interface ButtonFillProps {
   href?: string;
   onClick?: () => void;
   className?: string;
+  disabled?: boolean;
 }
 
 const ButtonFill: React.FC<ButtonFillProps> = ({
@@ -17,13 +18,16 @@ const ButtonFill: React.FC<ButtonFillProps> = ({
   href,
   onClick,
   className = "",
+  disabled = false,
 }) => {
   const baseClasses =
     "inline-flex items-center justify-center px-3 md:px-7 py-2 md:py-3 bg-[var(--primary-color)] text-[var(--primary-bg)] font-semibold tracking-wide hover:opacity-90 transition";
 
+  const disabledClasses = disabled ? "opacity-50 cursor-not-allowed" : "";
+
   if (href) {
     return (
-      <Link href={href} className={`${baseClasses} ${className}`}>
+      <Link href={href} className={`${baseClasses} ${disabledClasses} ${className}`}>
         {text}
       </Link>
     );
@@ -33,7 +37,8 @@ const ButtonFill: React.FC<ButtonFillProps> = ({
     <button
       type={type}
       onClick={onClick}
-      className={`${baseClasses} ${className}`}
+      disabled={disabled}
+      className={`${baseClasses} ${disabledClasses} ${className}`}
     >
       {text}
     </button>

@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import Image from "next/image";
 import PhoneInput from "react-phone-input-2";
@@ -9,136 +10,253 @@ import ButtonFill from "./Button";
 interface PopupFormProps {
   open: boolean;
   onClose: () => void;
+  purpose?: "Buy" | "Sell";
 }
 
-const PopupForm: React.FC<PopupFormProps> = ({ open, onClose }) => {
+const PopupForm: React.FC<PopupFormProps> = ({ open, onClose, purpose }) => {
+  const [step, setStep] = useState<"form" | "otp" | "success">("form");
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [selectedPurpose, setSelectedPurpose] = useState(purpose || "");
+  const [message, setMessage] = useState("");
+  const [otp, setOtp] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  /* ---------------- SEND OTP ---------------- */
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!name || !email || !phone || !selectedPurpose) {
+      setError("Please fill all required fields");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/lead/send-otp`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name,
+            email,
+            phone: phone.replace(/\D/g, ""),
+            purpose: selectedPurpose,
+            message,
+          }),
+        }
+      );
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+
+      setStep("otp");
+    } catch (err: any) {
+      setError(err.message || "Failed to send OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* ---------------- VERIFY OTP ---------------- */
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!otp) {
+      setError("Please enter OTP");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/lead/verify-otp`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, otp }),
+        }
+      );
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+
+      setStep("success");
+
+      setTimeout(() => {
+        resetForm();
+        onClose();
+      }, 2500);
+    } catch (err: any) {
+      setError(err.message || "OTP verification failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetForm = () => {
+    setStep("form");
+    setName("");
+    setEmail("");
+    setPhone("");
+    setMessage("");
+    setOtp("");
+    setSelectedPurpose(purpose || "");
+    setError("");
+  };
 
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-11/12 max-w-3xl bg-[var(--secondary-bg)] backdrop-blur-xl rounded-3xl shadow-[0_0_40px_rgba(0,0,0,0.15)] border border-white/30 animate-popupSlide overflow-hidden flex flex-col md:flex-row">
-        {/* CLOSE BUTTON */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center  backdrop-blur-lg">
+      <div className="relative w-[92%] max-w-4xl bg-transparent backdrop-blur-xl   rounded-3xl shadow-2xl overflow-hidden grid md:grid-cols-2">
+
+        {/* Close */}
         <button
-          onClick={onClose}
-          className="absolute top-3 right-3 text-gray-500 hover:text-black transition text-xl z-10"
+          onClick={() => {
+            resetForm();
+            onClose();
+          }}
+          className="absolute top-4 right-4 z-10 bg-white/80 rounded-full w-9 h-9 flex items-center justify-center text-xl hover:bg-white transition"
         >
           ✕
         </button>
 
-        {/* LEFT IMAGE */}
-        <div className="hidden md:block relative w-full md:w-1/2 h-48 md:h-auto">
+        {/* LEFT IMAGE / BRAND */}
+        <div className="hidden md:flex relative">
           <Image
             src={popup}
-            alt="Doctor Appointment"
+            alt="Shivaksh"
             fill
-            className="object-fill"
+            className="object-cover"
           />
-          <div className="absolute inset-0 bg-linear-to-b from-black/10 to-black/40" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10 p-8 flex items-end">
+            <div className="text-white">
+              <h3 className="text-2xl font-bold">Trusted Property Experts</h3>
+              <p className="text-sm mt-2 opacity-90">
+                Verified leads • Secure process • Quick response
+              </p>
+            </div>
+          </div>
         </div>
 
-        {/* RIGHT FORM */}
-        {/* RIGHT FORM */}
-        <div className="w-full md:w-1/2 p-8">
-          <h2 className="text-2xl font-bold text-center mb-6 text-[var(--primary-color)]">
+        {/* RIGHT CONTENT */}
+        <div className="p-8 md:p-10 bg-[#425D75]/60">
+          <h2 className="text-3xl font-bold text-center mb-2 text-white">
             Enquire Now
           </h2>
+          <p className="text-center text-sm text-gray-300 mb-6 color:white-1000">
+            Get a callback from our property expert
+          </p>
 
-          <form className="space-y-3">
-            {/* Name */}
-            <input
-              type="text"
-              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 text-black focus:border-[var(--primary-color)]"
-              placeholder="Full Name"
-              required
-            />
+          {error && (
+            <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
 
-            {/* Phone */}
-            <PhoneInput
-              country="in"
-              value={phone}
-              onChange={setPhone}
-              enableSearch
-              countryCodeEditable={false}
-              placeholder="Phone Number"
-              containerClass="!w-full"
-              inputClass="!w-full !h-[44px] !pl-12 !pr-4 !rounded-lg text-black !border !border-gray-300 focus:!border-[var(--primary-color)]"
-              buttonClass="!border !border-gray-300 !rounded-l-lg text-black"
-              dropdownClass="!text-gray-800"
-            />
+          {/* FORM */}
+          {step === "form" && (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <input
+                type="text"
+                placeholder="Full Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-black/10 outline-none bg-white"
+              />
 
-            {/* Email */}
-            <input
-              type="email"
-              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 text-black  focus:border-[var(--primary-color)]"
-              placeholder="Email Address"
-            />
+              <PhoneInput
+                country="in"
+                value={phone}
+                onChange={setPhone}
+                containerClass="w-full"
+                inputClass="!w-full !h-[50px] !rounded-xl !border !border-gray-300"
+              />
 
-            {/* Property Type */}
-            <select
-              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-black focus:border-[var(--primary-color)]"
-              defaultValue=""
-              required
-            >
-              <option value="" disabled>
-                Select Property Type
-              </option>
-              <option>Apartment / Flat</option>
-              <option>Independent House</option>
-              <option>Villa</option>
-              <option>Plot / Land</option>
-              <option>Commercial Property</option>
-            </select>
+              <input
+                type="email"
+                placeholder="Email Address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white"
+              />
 
-            {/* Budget */}
-            <select
-              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-black focus:border-[var(--primary-color)]"
-              defaultValue=""
-              required
-            >
-              <option value="" disabled>
-                Budget Range
-              </option>
-              <option>Under ₹50 Lakh</option>
-              <option>₹50 Lakh – ₹1 Cr</option>
-              <option>₹1 Cr – ₹2 Cr</option>
-              <option>₹2 Cr+</option>
-            </select>
+              <select
+                value={selectedPurpose}
+                onChange={(e) => setSelectedPurpose(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white"
+              >
+                <option value="">Select Purpose</option>
+                <option>Buy</option>
+                <option>Sell</option>
+              </select>
 
-            {/* Message */}
-            <textarea
-              className="w-full px-4 py-2.5 rounded-lg h-24 border border-gray-300 text-black resize-none focus:border-[var(--primary-color)]"
-              placeholder="Any specific requirement (BHK, facing, possession timeline, etc.)"
-            />
+              <textarea
+                placeholder="Any specific requirement (optional)"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 h-24 resize-none bg-white"
+              />
 
-            <ButtonFill
-              type="submit"
-              text="Get Call Back"
-              className="w-full mt-2"
-            />
-          </form>
+              <ButtonFill
+                type="submit"
+                text={loading ? "Sending OTP..." : "Get Call Back"}
+                disabled={loading}
+                className="w-full h-12 rounded-xl text-lg"
+              />
+            </form>
+          )}
+
+          {/* OTP */}
+          {step === "otp" && (
+            <form onSubmit={handleVerifyOtp} className="space-y-5 text-center">
+              <p className="text-sm text-gray-300">
+                Enter the 6-digit OTP sent to
+              </p>
+              <p className="font-semibold text-gray-300">{email}</p>
+
+              <input
+                type="text"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                maxLength={6}
+                className="w-full text-center px-4 py-4 text-xl tracking-widest rounded-xl border border-gray-300"
+                placeholder="••••••"
+              />
+
+              <ButtonFill
+                type="submit"
+                text={loading ? "Verifying..." : "Verify OTP"}
+                disabled={loading}
+                className="w-full h-12 rounded-xl text-lg"
+              />
+            </form>
+          )}
+
+          {/* SUCCESS */}
+          {step === "success" && (
+            <div className="text-center py-14">
+              <div className="text-green-500 text-6xl mb-4">✓</div>
+              <h3 className="text-xl font-semibold text-gray-300">
+                Thank you!
+              </h3>
+              <p className="text-sm text-gray-300 mt-2">
+                Your request has been submitted successfully.
+              </p>
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Animations */}
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        .animate-fadeIn {
-          animation: fadeIn .35s ease-out;
-        }
-
-        @keyframes popupSlide {
-          0% { opacity:0; transform: translateY(20px) scale(.95); }
-          100% { opacity:1; transform: translateY(0) scale(1); }
-        }
-        .animate-popupSlide {
-          animation: popupSlide .45s cubic-bezier(0.16,0.8,0.32,1);
-        }
-      `}</style>
     </div>
   );
 };
