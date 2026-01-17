@@ -318,7 +318,7 @@ export default function HeroSlider() {
           </div>
         </div>
       </section>
-      <PopupForm open={openForm} onClose={() => setOpenForm(false)} purpose="" />
+      <PopupForm open={openForm} onClose={() => setOpenForm(false)}  />
     </>
   );
 }
