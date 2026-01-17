@@ -118,7 +118,7 @@ export default function Navbar() {
             {/* GET IN TOUCH BUTTON */}
             <ButtonFill onClick={() => setOpenForm(true)} text="Get in touch" />
           </div>
-          <PopupForm open={openForm} onClose={() => setOpenForm(false)} purpose="" />
+          <PopupForm open={openForm} onClose={() => setOpenForm(false)} />
 
           {/* MOBILE TOGGLE */}
           <button
