@@ -137,7 +137,7 @@ const PopupForm: React.FC<PopupFormProps> = ({ open, onClose, purpose }) => {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-lg">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center backdrop-blur-lg">
       <div className="relative w-[92%] max-w-4xl bg-transparent backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden grid md:grid-cols-2">
 
         {/* Close */}
@@ -186,7 +186,7 @@ const PopupForm: React.FC<PopupFormProps> = ({ open, onClose, purpose }) => {
                 placeholder="Full Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white"
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-black placeholder-gray-500"
               />
 
               <PhoneInput
@@ -202,13 +202,13 @@ const PopupForm: React.FC<PopupFormProps> = ({ open, onClose, purpose }) => {
                 placeholder="Email Address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white"
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-black placeholder-gray-500"
               />
 
               <select
                 value={selectedPurpose}
                 onChange={(e) => setSelectedPurpose(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white"
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-black"
               >
                 <option value="">Select Purpose</option>
                 <option>Buy</option>
@@ -219,7 +219,7 @@ const PopupForm: React.FC<PopupFormProps> = ({ open, onClose, purpose }) => {
                 placeholder="Any specific requirement (optional)"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 h-24 bg-white"
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 h-24 bg-white text-black placeholder-gray-500"
               />
 
               <ButtonFill
@@ -243,7 +243,7 @@ const PopupForm: React.FC<PopupFormProps> = ({ open, onClose, purpose }) => {
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
                 maxLength={6}
-                className="w-full text-center px-4 py-4 text-xl tracking-widest rounded-xl border border-gray-300"
+                className="w-full text-center px-4 py-4 text-xl tracking-widest rounded-xl border border-gray-300 bg-white text-black"
                 placeholder="••••••"
               />
 

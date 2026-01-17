@@ -116,7 +116,7 @@ export default function Navbar() {
           {/* RIGHT — PHONE */}
           <div className="hidden lg:flex gap-5 items-center">
             {/* GET IN TOUCH BUTTON */}
-            <ButtonFill onClick={() => setOpenForm(true)} text="Get in touch" />
+            <ButtonFill onClick={() => setOpenForm(true)} text="Get in touch" className="h-12 rounded-xl text-base" />
           </div>
           <PopupForm open={openForm} onClose={() => setOpenForm(false)} />
 
