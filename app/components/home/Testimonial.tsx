@@ -1,90 +1,199 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const testimonials = [
   {
     name: "Rahul Mehta",
     location: "Gurgaon",
-    text: "The entire buying experience was smooth and transparent. Every property shared with us was verified, and the guidance helped us make a confident decision.",
+    text: "The entire buying experience was smooth and transparent. Every property shared with us was verified.",
   },
   {
     name: "Neha Kapoor",
     location: "Delhi",
-    text: "What stood out was the honesty and market knowledge. There was no pressure — only genuine advice aligned with our requirements.",
+    text: "Honest guidance and deep market knowledge made the process stress-free and clear.",
   },
   {
     name: "Amit Jain",
     location: "Noida",
-    text: "From site visits to final paperwork, the process was handled professionally. We felt supported at every step.",
+    text: "Professional handling from site visits to paperwork. We felt confident throughout.",
   },
   {
     name: "Pankaj Verma",
     location: "Gurgaon",
-    text: "Their understanding of premium properties and investment value made a huge difference in our final choice.",
+    text: "Their understanding of premium real estate and long-term value is exceptional.",
+  },
+  {
+    name: "Ritika Sharma",
+    location: "Faridabad",
+    text: "No pressure, only clarity. This is how property advisory should be.",
   },
 ];
 
 export default function Testimonials() {
-  const [active, setActive] = useState(0);
+  const [index, setIndex] = useState(0);
 
-  const prev = () =>
-    setActive((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1));
+  // Auto slide
+  useEffect(() => {
+    const timer = setInterval(() => {
+      nextSlide();
+    }, 4000);
 
-  const next = () =>
-    setActive((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1));
+    return () => clearInterval(timer);
+  }, []);
+
+  const nextSlide = () => {
+    setIndex((prev) => (prev + 2) % testimonials.length);
+  };
+
+  const prevSlide = () => {
+    setIndex((prev) =>
+      prev === 0 ? testimonials.length - 2 : prev - 2
+    );
+  };
+
+  const visible = [
+    testimonials[index],
+    testimonials[(index + 1) % testimonials.length],
+  ];
 
   return (
-    <section className="bg-[var(--secondary-bg)] py-12">
-      <div className="w-11/12 md:w-5/6 mx-auto max-w-4xl">
-        {/* HEADER */}
-        <p className="text-sm tracking-[0.3em] uppercase text-[var(--primary-color)] font-body text-center">
+    <section className="bg-[var(--secondary-bg)] py-20 border-2 border-amber-500">
+      <div className="w-[80%] mx-auto">
+
+        <p className="text-2xl tracking-[0.35em] uppercase text-center font-semibold text-[var(--primary-color)]">
           Testimonials
         </p>
 
-        <h2 className="mt-4 text-4xl md:text-5xl font-heading text-[var(--text-primary)] text-center mb-14">
+        <h2 className="mt-4 text-4xl md:text-5xl font-heading font-extrabold text-center text-[var(--text-primary)] mb-16">
           What Our Clients Say
         </h2>
 
-        {/* TESTIMONIAL */}
-        <div className="relative text-center">
-          {/* GOLD ACCENT */}
-          <div className="absolute left-1/2 -translate-x-1/2 -top-6 w-12 h-1 bg-[var(--primary-color)]" />
+        {/* WRAPPER FOR ARROWS + BOX */}
+        <div className="relative flex items-center gap-6">
 
-          <blockquote
-            key={active}
-            className="font-heading text-2xl md:text-3xl text-[var(--text-primary)] leading-relaxed transition-opacity duration-500"
+          {/* LEFT ARROW */}
+          <button
+            onClick={prevSlide}
+            className="
+              hidden md:flex
+              w-12 h-12
+              items-center justify-center
+              rounded-full
+              border border-[var(--med-border)]
+              bg-white
+              text-[var(--text-primary)]
+              hover:bg-[var(--primary-color)]
+              hover:text-white
+              transition
+            "
+            aria-label="Previous testimonials"
           >
-            “{testimonials[active].text}”
-          </blockquote>
+            <ChevronLeft size={22} />
+          </button>
 
-          <p className="mt-6 text-sm font-body text-[var(--text-muted)]">
-            — {testimonials[active].name}, {testimonials[active].location}
+          {/* TESTIMONIAL BOX */}
+          {/* <div className="flex-1 bg-[var(--med-light)] border border-[var(--med-border)] rounded-3xl p-10 md:p-14 overflow-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 transition-all duration-700 ease-in-out">
+              {visible.map((item, i) => (
+                <div
+                  key={i}
+                  className="bg-white border border-[var(--med-border)] rounded-2xl p-8 shadow-sm hover:shadow-md transition"
+                >
+                  <p className="text-lg font-semibold text-[var(--text-primary)] leading-relaxed mb-6">
+                    “{item.text}”
+                  </p>
+
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-[var(--primary-color)] text-white flex items-center justify-center font-bold">
+                      {item.name.charAt(0)}
+                    </div>
+
+                    <div>
+                      <h4 className="text-base font-bold text-[var(--text-primary)]">
+                        {item.name}
+                      </h4>
+                      <p className="text-xs text-[var(--text-muted)] mt-1">
+                        {item.location}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div> */}
+
+          <div className="flex-1 bg-[var(--med-light)] border border-[var(--med-border)] rounded-3xl p-8 md:p-14 overflow-hidden">
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 transition-all duration-700 ease-in-out">
+
+    {/* First testimonial – always visible */}
+    <div className="bg-white border border-[var(--med-border)] rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-md transition">
+      <p className="text-base md:text-lg font-semibold text-[var(--text-primary)] leading-relaxed mb-6">
+        “{visible[0].text}”
+      </p>
+
+      <div className="flex items-center gap-4">
+        <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[var(--primary-color)] text-white flex items-center justify-center font-bold">
+          {visible[0].name.charAt(0)}
+        </div>
+
+        <div>
+          <h4 className="text-sm md:text-base font-bold text-[var(--text-primary)]">
+            {visible[0].name}
+          </h4>
+          <p className="text-xs text-[var(--text-muted)] mt-1">
+            {visible[0].location}
           </p>
+        </div>
+      </div>
+    </div>
 
-          {/* ARROWS */}
-          <div className="mt-10 flex items-center justify-center gap-8">
-            <button
-              onClick={prev}
-              aria-label="Previous testimonial"
-              className="w-12 h-12 flex items-center justify-center border border-[var(--border-color)] rounded-full hover:border-[var(--primary-color)] transition"
-            >
-              <ChevronLeft />
-            </button>
+    {/* Second testimonial – hidden on mobile */}
+    <div className="hidden md:block bg-white border border-[var(--med-border)] rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-md transition">
+      <p className="text-base md:text-lg font-semibold text-[var(--text-primary)] leading-relaxed mb-6">
+        “{visible[1].text}”
+      </p>
 
-            <span className="text-sm text-[var(--text-muted)] font-body">
-              {active + 1} / {testimonials.length}
-            </span>
+      <div className="flex items-center gap-4">
+        <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[var(--primary-color)] text-white flex items-center justify-center font-bold">
+          {visible[1].name.charAt(0)}
+        </div>
 
-            <button
-              onClick={next}
-              aria-label="Next testimonial"
-              className="w-12 h-12 flex items-center justify-center border border-[var(--border-color)] rounded-full hover:border-[var(--primary-color)] transition"
-            >
-              <ChevronRight />
-            </button>
-          </div>
+        <div>
+          <h4 className="text-sm md:text-base font-bold text-[var(--text-primary)]">
+            {visible[1].name}
+          </h4>
+          <p className="text-xs text-[var(--text-muted)] mt-1">
+            {visible[1].location}
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+          {/* RIGHT ARROW */}
+          <button
+            onClick={nextSlide}
+            className="
+              hidden md:flex
+              w-12 h-12
+              items-center justify-center
+              rounded-full
+              border border-[var(--med-border)]
+              bg-white
+              text-[var(--text-primary)]
+              hover:bg-[var(--primary-color)]
+              hover:text-white
+              transition
+            "
+            aria-label="Next testimonials"
+          >
+            <ChevronRight size={22} />
+          </button>
         </div>
       </div>
     </section>

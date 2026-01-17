@@ -19,23 +19,25 @@ const projects = [
 export default function FeaturedProjects() {
   return (
     <section className="bg-white border-b border-[var(--border-color)]">
-      <div className="w-11/12 md:w-5/6 mx-auto py-16">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8">
-          <div className="max-w-2xl">
-            <p className="text-sm tracking-[0.3em] uppercase text-[var(--primary-color)] font-body">
+      <div className="w-11/12 md:w-5/6 mx-auto py-16 ">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8  mt-[-25]">
+          <div className="max-w-2xl  mt-[-2]">
+            <p className="text-xl tracking-[0.2em] uppercase
+                text-[var(--primary-color)]
+                font-body font-semibold">
               Featured Projects
             </p>
-            <h2 className="mt-4 text-4xl md:text-5xl font-heading text-[var(--text-primary)]">
+            <h2 className="mt-2 pt-3 text-3xl md:text-5xl font-bold font-heading text-[var(--text-primary)]">
               Where comfort meets craft
             </h2>
-            <p className="mt-5 text-[var(--text-muted)] font-body leading-relaxed">
+            <p className="mt-5 pt-4 text-[var(--text-muted)] font-bold text-lg  font-body leading-relaxed">
               A curated shortlist of verified developments—picked for location,
               build quality, and long-term value. (Slightly more modern + minimal
               than the reference theme.)
             </p>
           </div>
 
-          <Link href="/projects" className="shrink-0">
+          <Link href="/projects" className="shrink-0 text-2xl">
             <ButtonFill text="View all projects" />
           </Link>
         </div>

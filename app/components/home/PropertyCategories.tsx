@@ -89,7 +89,9 @@ export default function PropertyCategoriesHover() {
         <div className="w-11/12 md:w-5/6 mx-auto">
           {/* HEADER */}
           <div className="max-w-2xl mb-14">
-            <p className="text-sm tracking-[0.3em] uppercase text-[var(--primary-color)] font-body">
+            <p className="text-xl tracking-[0.2em] uppercase
+                text-[var(--primary-color)]
+                font-body font-semibold">
               Property Categories
             </p>
             <h2 className="mt-4 text-4xl md:text-5xl font-heading text-[var(--text-primary)]">
@@ -192,7 +194,9 @@ export default function PropertyCategoriesHover() {
         <div className="w-11/12 md:w-5/6 mx-auto">
           {/* HEADER */}
           <div className="mb-12 max-w-xl">
-            <p className="text-sm tracking-[0.3em] uppercase text-[var(--primary-color)] font-body">
+            <p className="text-xl tracking-[0.2em] uppercase
+                text-[var(--primary-color)]
+                font-body font-semibold">
               Featured Property
             </p>
             <h2 className="mt-3 text-3xl md:text-4xl font-heading text-[var(--text-primary)]">

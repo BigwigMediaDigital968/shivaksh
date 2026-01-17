@@ -221,41 +221,42 @@ export default function HeroSlider() {
           }
         `}</style>
       </section>
+
       <section className="bg-white border-b border-[var(--border-color)]">
-        <div className="w-11/12 md:w-5/6 mx-auto py-6">
+        <div className="w-11/12 md:w-5/6 mx-auto py-12">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
-              <p className="font-heading text-3xl text-[var(--primary-color)]">
+              <p className="font-heading text-5xl text-[var(--primary-color)]">
                 10+
               </p>
-              <p className="text-sm font-body text-[var(--text-muted)]">
+              <p className="text-xl pt-2  font-body  text-[var(--text-muted)]">
                 Years of Market Experience
               </p>
             </div>
 
             <div>
-              <p className="font-heading text-3xl text-[var(--primary-color)]">
+              <p className="font-heading text-5xl text-[var(--primary-color)]">
                 100%
               </p>
-              <p className="text-sm font-body text-[var(--text-muted)]">
+              <p className="text-xl  pt-2 font-body text-[var(--text-muted)]">
                 Verified Properties
               </p>
             </div>
 
             <div>
-              <p className="font-heading text-3xl text-[var(--primary-color)]">
+              <p className="font-heading text-5xl text-[var(--primary-color)]">
                 25+
               </p>
-              <p className="text-sm font-body text-[var(--text-muted)]">
+              <p className="text-xl  pt-2 font-body text-[var(--text-muted)]">
                 Prime Locations Covered
               </p>
             </div>
 
             <div>
-              <p className="font-heading text-3xl text-[var(--primary-color)]">
-                End-to-End
+              <p className="font-heading text-5xl text-[var(--primary-color)]">
+                24/7
               </p>
-              <p className="text-sm font-body text-[var(--text-muted)]">
+              <p className="text-xl pt-2 font-body text-[var(--text-muted)]">
                 Buying & Investment Support
               </p>
             </div>
@@ -263,61 +264,83 @@ export default function HeroSlider() {
         </div>
       </section>
 
-      <section className="bg-[var(--secondary-bg)] py-12">
+      <section className="bg-[var(--secondary-bg)] py-16">
         <div className="w-11/12 md:w-5/6 mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+
             {/* LEFT — CONTENT */}
             <div className="max-w-xl">
-              <p className="text-sm tracking-[0.3em] uppercase text-[var(--primary-color)] font-body">
+              <p className="
+                text-xl tracking-[0.2em] uppercase
+                text-[var(--primary-color)]
+                font-body font-semibold
+              ">
                 Who We Are
               </p>
 
-              <h2 className="mt-4 text-4xl md:text-5xl font-heading text-[var(--text-primary)]">
+              <h2 className="
+                mt-5
+                text-4xl md:text-5xl
+                font-heading font-extrabold
+                text-[var(--text-primary)]
+                leading-tight
+              ">
                 A Real Estate Advisory Built on Trust
               </h2>
 
-              <p className="mt-6 text-[var(--text-muted)] font-body leading-relaxed">
-                We are a boutique real estate advisory focused on premium
-                residential, commercial, and investment properties. Our approach
-                is simple — honest guidance, verified listings, and long-term
-                value for our clients.
-              </p>
+              <div className="mt-8 space-y-5">
+                <p className="text-[var(--text-muted)] font-bold text-lg font-body leading-relaxed">
+                  We are a boutique real estate advisory focused on premium
+                  residential, commercial, and investment properties. Our approach
+                  is simple — honest guidance, verified listings, and long-term
+                  value for our clients.
+                </p>
 
-              <p className="mt-4 text-[var(--text-muted)] font-body leading-relaxed">
-                With deep market knowledge and hands-on experience, we help
-                buyers, investors, and families make confident property
-                decisions without pressure or confusion.
-              </p>
+                <p className="text-[var(--text-muted)] font-bold text-lg  font-body leading-relaxed">
+                  With deep market knowledge and hands-on experience, we help
+                  buyers, investors, and families make confident property
+                  decisions without pressure or confusion.
+                </p>
+              </div>
             </div>
 
-            {/* RIGHT — HIGHLIGHT BOX */}
-            <div className="border border-[var(--border-color)] p-10 bg-[var(--secondary-bg)]">
-              <p className="font-heading text-2xl text-[var(--text-primary)] mb-6">
-                Our Philosophy
-              </p>
+            {/* RIGHT — PHILOSOPHY CARD */}
+            <div className="
+              relative
+              rounded-2xl
+              p-12
+              bg-[#1F3D2B]
+              shadow-2xl
+              border border-white/10
+              transition-all duration-300
+              hover:-translate-y-1 hover:shadow-3xl
+            ">
+              {/* Accent line */}
+              <span className="absolute left-0 top-8 h-16 w-1 bg-[#E0B15C] rounded"></span>
 
-              <ul className="space-y-4 font-body text-[var(--text-muted)]">
-                <li className="flex gap-3">
-                  <span className="text-[var(--primary-color)]">—</span>
-                  Transparency over transactions
-                </li>
-                <li className="flex gap-3">
-                  <span className="text-[var(--primary-color)]">—</span>
-                  Verified properties only
-                </li>
-                <li className="flex gap-3">
-                  <span className="text-[var(--primary-color)]">—</span>
-                  Client-first advisory approach
-                </li>
-                <li className="flex gap-3">
-                  <span className="text-[var(--primary-color)]">—</span>
-                  Long-term value, not short-term sales
-                </li>
+              <h3 className="text-2xl font-extrabold text-white mb-8">
+                Our Philosophy
+              </h3>
+
+              <ul className="space-y-6">
+                {[
+                  "Transparency over transactions",
+                  "Verified properties only",
+                  "Client-first advisory approach",
+                  "Long-term value, not short-term sales",
+                ].map((item, index) => (
+                  <li key={index} className="flex gap-4 font-semibold text-white">
+                    <span className="mt-2 h-2.5 w-2.5 rounded-full bg-[#E0B15C]"></span>
+                    {item}
+                  </li>
+                ))}
               </ul>
             </div>
+
           </div>
         </div>
       </section>
+
       <PopupForm open={openForm} onClose={() => setOpenForm(false)}  />
     </>
   );
