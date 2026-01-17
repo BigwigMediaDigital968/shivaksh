@@ -54,8 +54,18 @@ const PopupForm: React.FC<PopupFormProps> = ({ open, onClose, purpose }) => {
         }
       );
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
+      const text = await res.text();
+      let data: any = {};
+
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        throw new Error("Server error. Please try again.");
+      }
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to send OTP");
+      }
 
       setStep("otp");
     } catch (err: any) {
@@ -87,8 +97,18 @@ const PopupForm: React.FC<PopupFormProps> = ({ open, onClose, purpose }) => {
         }
       );
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
+      const text = await res.text();
+      let data: any = {};
+
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        throw new Error("Server error. Please try again.");
+      }
+
+      if (!res.ok) {
+        throw new Error(data.message || "OTP verification failed");
+      }
 
       setStep("success");
 
@@ -117,8 +137,8 @@ const PopupForm: React.FC<PopupFormProps> = ({ open, onClose, purpose }) => {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center  backdrop-blur-lg">
-      <div className="relative w-[92%] max-w-4xl bg-transparent backdrop-blur-xl   rounded-3xl shadow-2xl overflow-hidden grid md:grid-cols-2">
+    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-lg">
+      <div className="relative w-[92%] max-w-4xl bg-transparent backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden grid md:grid-cols-2">
 
         {/* Close */}
         <button
@@ -131,14 +151,9 @@ const PopupForm: React.FC<PopupFormProps> = ({ open, onClose, purpose }) => {
           ✕
         </button>
 
-        {/* LEFT IMAGE / BRAND */}
+        {/* LEFT IMAGE */}
         <div className="hidden md:flex relative">
-          <Image
-            src={popup}
-            alt="Shivaksh"
-            fill
-            className="object-cover"
-          />
+          <Image src={popup} alt="Shivaksh" fill className="object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10 p-8 flex items-end">
             <div className="text-white">
               <h3 className="text-2xl font-bold">Trusted Property Experts</h3>
@@ -154,7 +169,7 @@ const PopupForm: React.FC<PopupFormProps> = ({ open, onClose, purpose }) => {
           <h2 className="text-3xl font-bold text-center mb-2 text-white">
             Enquire Now
           </h2>
-          <p className="text-center text-sm text-gray-300 mb-6 color:white-1000">
+          <p className="text-center text-sm text-gray-300 mb-6">
             Get a callback from our property expert
           </p>
 
@@ -164,7 +179,6 @@ const PopupForm: React.FC<PopupFormProps> = ({ open, onClose, purpose }) => {
             </div>
           )}
 
-          {/* FORM */}
           {step === "form" && (
             <form onSubmit={handleSubmit} className="space-y-4">
               <input
@@ -172,7 +186,7 @@ const PopupForm: React.FC<PopupFormProps> = ({ open, onClose, purpose }) => {
                 placeholder="Full Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-black/10 outline-none bg-white"
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white"
               />
 
               <PhoneInput
@@ -205,7 +219,7 @@ const PopupForm: React.FC<PopupFormProps> = ({ open, onClose, purpose }) => {
                 placeholder="Any specific requirement (optional)"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 h-24 resize-none bg-white"
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 h-24 bg-white"
               />
 
               <ButtonFill
@@ -217,7 +231,6 @@ const PopupForm: React.FC<PopupFormProps> = ({ open, onClose, purpose }) => {
             </form>
           )}
 
-          {/* OTP */}
           {step === "otp" && (
             <form onSubmit={handleVerifyOtp} className="space-y-5 text-center">
               <p className="text-sm text-gray-300">
@@ -243,7 +256,6 @@ const PopupForm: React.FC<PopupFormProps> = ({ open, onClose, purpose }) => {
             </form>
           )}
 
-          {/* SUCCESS */}
           {step === "success" && (
             <div className="text-center py-14">
               <div className="text-green-500 text-6xl mb-4">✓</div>
