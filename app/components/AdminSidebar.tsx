@@ -26,8 +26,8 @@ const menu = [
     icon: Users,
   },
   {
-    name: "Properties",
-    href: "/admin/properties",
+    name: "Property",
+    href: "/admin/property",
     icon: Home,
   },
   {
