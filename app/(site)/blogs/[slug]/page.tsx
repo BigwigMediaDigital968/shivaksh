@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import InlineEnquiryForm from "../../../components/EnquiryForm";
 
 interface Blog {
   title: string;
@@ -21,28 +21,23 @@ interface Heading {
 
 export default function BlogSlugPage() {
   const params = useParams();
-  const slug = params?.slug as string | undefined;
+  const slug = params?.slug as string;
   const router = useRouter();
 
   const [blog, setBlog] = useState<Blog | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
-  const [hasFetched, setHasFetched] = useState(false);
   const [headings, setHeadings] = useState<Heading[]>([]);
+  const [animate, setAnimate] = useState(false);
 
+  /* ---------------- FETCH BLOG ---------------- */
   useEffect(() => {
     if (!slug) return;
 
-    const controller = new AbortController();
-
     const fetchBlog = async () => {
-      setLoading(true);
-      setNotFound(false);
-
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/blog/${slug}`,
-          { signal: controller.signal }
+          `${process.env.NEXT_PUBLIC_API_URL}/blog/${slug}`
         );
 
         if (res.status === 404) {
@@ -50,11 +45,9 @@ export default function BlogSlugPage() {
           return;
         }
 
-        if (!res.ok) throw new Error("Fetch failed");
-
         const data: Blog = await res.json();
 
-        // TOC logic
+        // TOC
         const tempDiv = document.createElement("div");
         tempDiv.innerHTML = data.content;
 
@@ -62,57 +55,51 @@ export default function BlogSlugPage() {
         const toc = h2s.map((h, i) => {
           const id = `heading-${i}`;
           h.setAttribute("id", id);
-          return { id, text: h.textContent || `Section ${i + 1}` };
+          return { id, text: h.textContent || "" };
         });
 
         data.content = tempDiv.innerHTML;
-
         setBlog(data);
         setHeadings(toc);
-      } catch (err: any) {
-        if (err.name !== "AbortError") {
-          console.error(err);
-          setNotFound(true);
-        }
+
+        // trigger animation once content is ready
+        setTimeout(() => setAnimate(true), 100);
+      } catch {
+        setNotFound(true);
       } finally {
-        setHasFetched(true);
         setLoading(false);
       }
     };
 
     fetchBlog();
-    return () => controller.abort();
   }, [slug]);
 
   const scrollToHeading = (id: string) => {
     const el = document.getElementById(id);
     if (!el) return;
-
-    const y =
-      el.getBoundingClientRect().top + window.scrollY - 80;
-    window.scrollTo({ top: y, behavior: "smooth" });
+    window.scrollTo({
+      top: el.getBoundingClientRect().top + window.scrollY - 120,
+      behavior: "smooth",
+    });
   };
 
-  /* ---------------- RENDER STATES ---------------- */
-
-  // 1️⃣ Wait for slug hydration
-  if (!slug || loading) {
+  /* ---------------- LOADING ---------------- */
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 to-purple-200 animate-pulse">
-        <div className="h-[400px] w-full max-w-5xl bg-gray-200 rounded-xl" />
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-full max-w-6xl h-[400px] bg-gray-200 animate-pulse rounded-xl" />
       </div>
     );
   }
 
-  // 2️⃣ Only show 404 AFTER fetch finished
-  if (hasFetched && (notFound || !blog)) {
+  /* ---------------- 404 ---------------- */
+  if (notFound || !blog) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center text-center bg-gradient-to-br from-purple-100 to-purple-200">
+      <div className="min-h-screen flex flex-col items-center justify-center">
         <h1 className="text-6xl font-bold mb-4">404</h1>
-        <p className="text-gray-600 mb-6">Blog not found or removed.</p>
         <button
           onClick={() => router.push("/blogs")}
-          className="px-6 py-3 bg-purple-700 text-white rounded-lg"
+          className="px-6 py-3 bg-green-800 text-white rounded-lg"
         >
           Back to Blogs
         </button>
@@ -120,58 +107,84 @@ export default function BlogSlugPage() {
     );
   }
 
-  /* ---------------- BLOG CONTENT ---------------- */
-
+  /* ---------------- PAGE ---------------- */
   return (
-    <div className="relative min-h-screen">
-      <div className="absolute top-0 left-0 w-full h-20 bg-purple-700 z-20" />
-      <div className="absolute top-20 left-0 w-full h-4 bg-gradient-to-b from-purple-700 to-transparent z-10" />
+    <div className="bg-white">
+      <article className="max-w-360 mx-auto px-4 py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
 
-      <article className="pt-32 max-w-5xl mx-auto px-4">
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-5xl font-extrabold mb-6 text-center"
-        >
-          {blog!.title}
-        </motion.h1>
+          {/* LEFT CONTENT */}
+          <div className="lg:col-span-2">
 
-        {blog!.coverImage && (
-          <div className="relative h-[450px] rounded-xl overflow-hidden mb-6">
-            <Image
-              src={blog!.coverImage}
-              alt={blog!.coverImageAlt || blog!.title}
-              fill
-              className="object-cover"
-              priority
+            {/* TITLE */}
+            <h1
+              className={`text-4xl pt-15 md:text-5xl font-extrabold mb-3
+                transition-all duration-700 ease-out
+                ${animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}
+              `}
+            >
+              {blog.title}
+            </h1>
+
+            {/* META */}
+            <p className="text-gray-500 mb-6">
+              By {blog.author} •{" "}
+              {new Date(blog.datePublished).toLocaleDateString()}
+            </p>
+
+            {/* COVER IMAGE */}
+            {blog.coverImage && (
+              <div
+                className={`relative h-[420px] rounded-2xl overflow-hidden mb-10 border-4 border-b-emerald-900
+                  transition-all duration-700 delay-150 ease-out
+                  ${animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-16"}
+                `}
+              >
+                <Image
+                  src={blog.coverImage}
+                  alt={blog.coverImageAlt || blog.title}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+            )}
+
+            {/* TOC */}
+            {headings.length > 0 && (
+              <div className="bg-green-50 rounded-xl p-6 mb-8 border-4 border-green-900">
+                <h3 className="font-semibold mb-3">Contents</h3>
+                {headings.map((h) => (
+                  <button
+                    key={h.id}
+                    onClick={() => scrollToHeading(h.id)}
+                    className="block text-left text-green-800 hover:underline mb-1"
+                  >
+                    {h.text}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* BLOG BODY */}
+            <div
+              className="prose prose-lg max-w-none"
+              dangerouslySetInnerHTML={{ __html: blog.content }}
             />
           </div>
-        )}
 
-        {headings.length > 0 && (
-          <div className="bg-purple-100 rounded-xl p-6 mb-8">
-            <h3 className="font-semibold mb-3">Contents</h3>
-            {headings.map(h => (
-              <button
-                key={h.id}
-                onClick={() => scrollToHeading(h.id)}
-                className="block text-left text-purple-700 hover:underline"
-              >
-                {h.text}
-              </button>
-            ))}
-          </div>
-        )}
+          {/* RIGHT SIDEBAR FORM */}
+          <aside className="lg:col-span-1">
+            <div className="sticky pt-25 top-28">
+              <InlineEnquiryForm
+                purpose="Buy"
+                slug={slug}
+                source="blog"
+              />
+            </div>
+          </aside>
 
-        <p className="text-gray-500 mb-6 text-center">
-          By {blog!.author} •{" "}
-          {new Date(blog!.datePublished).toLocaleDateString()}
-        </p>
-
-        <div
-          className="prose prose-lg max-w-none"
-          dangerouslySetInnerHTML={{ __html: blog!.content }}
-        />
+        </div>
       </article>
     </div>
   );
