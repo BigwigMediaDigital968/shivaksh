@@ -7,26 +7,30 @@ import PageHero from "../../components/PageHero";
 import heroImg from "../../assets/hero/hero2.jpg";
 
 interface BlogPost {
+  _id: string;
   title: string;
   slug: string;
   excerpt: string;
-  category?: string;
-  datePublished: string;
   coverImage: string;
+  author: string;
+  datePublished: string;
+  category?: string;
 }
 
 export default function BlogsPage() {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch blogs from API
   const fetchBlogs = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/blog/viewblog`);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/blog/viewblog`,
+        { cache: "no-store" }
+      );
       const data = await res.json();
-      setBlogs(data);
-    } catch (error) {
-      console.error("Error fetching blogs:", error);
+      setBlogs(data || []);
+    } catch (err) {
+      console.error("Failed to fetch blogs", err);
     } finally {
       setLoading(false);
     }
@@ -37,45 +41,75 @@ export default function BlogsPage() {
   }, []);
 
   return (
-    <div>
-      {/* Hero Section */}
+    <>
+      {/* HERO */}
       <PageHero
         title="Blogs"
-        subtitle="Latest insights and updates around buying, investing, and verifying properties."
+        subtitle="Insights, guides & updates from our real estate experts"
         image={heroImg}
       />
 
-      <section className="bg-white">
-        <div className="w-11/12 md:w-5/6 mx-auto py-16">
-          {loading ? (
-            <p className="text-center text-gray-600">Loading blogs...</p>
-          ) : blogs.length === 0 ? (
-            <p className="text-center text-gray-600">No blogs available.</p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* BLOG LIST */}
+      <section className="bg-gray-50 py-16">
+        <div className="w-11/12 md:w-5/6 mx-auto">
+          {/* LOADING */}
+          {loading && (
+            <p className="text-center text-gray-500">Loading blogs...</p>
+          )}
+
+          {/* EMPTY */}
+          {!loading && blogs.length === 0 && (
+            <p className="text-center text-gray-500">No blogs available.</p>
+          )}
+
+          {/* GRID */}
+          {!loading && blogs.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
               {blogs.map((blog) => (
                 <Link
-                  key={blog.slug}
+                  key={blog._id}
                   href={`/blogs/${blog.slug}`}
-                  className="group border border-[var(--border-color)] bg-[var(--secondary-bg)] overflow-hidden"
+                  className="group rounded-3xl overflow-hidden shadow-lg bg-white border border-gray-200 transform transition hover:scale-105 hover:shadow-2xl"
                 >
-                  <div className="relative h-[220px]">
+                  {/* IMAGE */}
+                  <div className="relative h-60 overflow-hidden">
                     <Image
                       src={blog.coverImage}
                       alt={blog.title}
                       fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                      sizes="(max-width: 768px) 100vw,
+                             (max-width: 1200px) 50vw,
+                             33vw"
+                      className="object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
                     />
-                    <div className="absolute inset-0 bg-black/20" />
                   </div>
+
+                  {/* CONTENT */}
                   <div className="p-6">
-                    <p className="text-xs tracking-[0.25em] uppercase text-[var(--primary-color)]">
-                      {blog.category || "General"} • {new Date(blog.datePublished).toLocaleDateString()}
+                    <p className="text-xs uppercase tracking-wider text-gray-400">
+                      {blog.category || "General"} •{" "}
+                      {new Date(blog.datePublished).toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
                     </p>
-                    <h3 className="mt-3 font-heading text-xl text-[var(--text-primary)] group-hover:text-[var(--primary-color)] transition">
+
+                    <h3 className="mt-3 text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition">
                       {blog.title}
                     </h3>
-                    <p className="mt-2 text-gray-700">{blog.excerpt}</p>
+
+                    <p className="mt-2 text-gray-600 line-clamp-3">
+                      {blog.excerpt}
+                    </p>
+
+                    <p className="mt-4 text-sm text-gray-500">
+                      By {blog.author}
+                    </p>
+
+                    <p className="mt-4 text-blue-600 font-medium uppercase tracking-wide">
+                      Read More →
+                    </p>
                   </div>
                 </Link>
               ))}
@@ -83,6 +117,6 @@ export default function BlogsPage() {
           )}
         </div>
       </section>
-    </div>
+    </>
   );
 }
