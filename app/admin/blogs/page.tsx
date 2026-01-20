@@ -50,6 +50,7 @@ export default function AdminBlogsPage() {
     }
   };
 
+
   useEffect(() => {
     fetchBlogs();
   }, []);
@@ -100,6 +101,13 @@ export default function AdminBlogsPage() {
     setSelectedImage(null);
     fetchBlogs();
   };
+
+  useEffect(() => {
+  const totalPages = Math.ceil(filteredBlogs.length / itemsPerPage);
+  if (currentPage > totalPages) {
+    setCurrentPage(totalPages || 1);
+  }
+}, [filteredBlogs, currentPage]);
 
   /* ================= UI ================= */
   return (
