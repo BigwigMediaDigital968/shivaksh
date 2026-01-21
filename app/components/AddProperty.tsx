@@ -203,8 +203,8 @@ function Select({ label, ...props }: any) {
                    focus:ring-2 focus:ring-purple-400 focus:outline-none"
       >
         <option value="Buy">Buy</option>
-        <option value="Sell">Sell</option>
-        <option value="Offplan">Offplan</option>
+        <option value="Rent">Rent</option>
+        <option value="Lease">Lease</option>
       </select>
     </div>
   );

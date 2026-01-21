@@ -13,6 +13,16 @@ const cards = [
     desc: "Pricing strategy, marketing support, and buyer screening—done transparently.",
     href: "/properties/sell",
   },
+  {
+    title: "Rent Property",
+    desc: "Find trusted tenants, rental agreements, and property management services.",
+    href: "/properties/rent",
+  },
+  {
+    title: "Lease Property",
+    desc: "Find trusted tenants, rental agreements, and property management services.",
+    href: "/properties/lease",
+  }
 ];
 
 export default function PropertiesPage() {
@@ -25,29 +35,25 @@ export default function PropertiesPage() {
       />
 
       <section className="bg-white">
-        <div className="w-11/12 md:w-5/6 mx-auto py-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {cards.map((c) => (
-              <Link
-                key={c.title}
-                href={c.href}
-                className="border border-[var(--border-color)] bg-[var(--secondary-bg)] p-8 hover:border-[var(--primary-color)] transition"
-              >
-                <h2 className="font-heading text-3xl text-[var(--text-primary)]">
-                  {c.title}
-                </h2>
-                <p className="mt-4 text-[var(--text-muted)] font-body">
-                  {c.desc}
-                </p>
-                <span className="mt-6 inline-flex items-center gap-3 text-sm font-body text-[var(--primary-color)]">
-                  Explore →
-                  <span className="block w-10 h-px bg-[var(--primary-color)]" />
-                </span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+  <div className="w-11/12 md:w-5/6 mx-auto py-16">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {cards.map((c) => (
+        <Link
+          key={c.title}
+          href={c.href}
+          className="border border-gray-300 bg-gray-50 p-8 hover:border-green-600 transition block"
+        >
+          <h2 className="text-3xl font-bold">{c.title}</h2>
+          <p className="mt-4 text-gray-600">{c.desc}</p>
+          <span className="mt-6 inline-flex items-center gap-3 text-sm text-green-600">
+            Explore →
+          </span>
+        </Link>
+      ))}
+    </div>
+  </div>
+</section>
+
     </div>
   );
 }

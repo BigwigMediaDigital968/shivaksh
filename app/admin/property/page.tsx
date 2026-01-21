@@ -46,6 +46,8 @@ export default function AdminPropertiesPage() {
     fetchProperties();
   }, []);
 
+  console.log(properties);
+
   /* IMAGE UPDATE (PATCH) */
   const updateImages = async () => {
     if (!images || !selectedProperty) return;

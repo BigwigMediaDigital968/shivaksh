@@ -18,8 +18,7 @@ interface Property {
   purpose: "Buy" | "Rent" | "Sell";
 }
 
-
-export default function PropertiesPage() {
+export default function RentPropertiesPage() {
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   const [properties, setProperties] = useState<Property[]>([]);
@@ -35,11 +34,11 @@ export default function PropertiesPage() {
   const [currentImages, setCurrentImages] = useState<{ [key: string]: number }>({});
   const slideIntervals = useRef<{ [key: string]: NodeJS.Timeout }>({});
 
-  /* FETCH PROPERTIES */
+  /* FETCH RENT PROPERTIES */
   const fetchProperties = async () => {
     try {
-      const res = await fetch(`${API_URL}/property/`);
-      if (!res.ok) throw new Error("Failed to fetch properties");
+      const res = await fetch(`${API_URL}/property`);
+      if (!res.ok) throw new Error("Failed to fetch rent properties");
       const data = await res.json();
       setProperties(data);
     } catch (err: any) {
@@ -55,10 +54,11 @@ export default function PropertiesPage() {
       Object.values(slideIntervals.current).forEach(clearInterval);
     };
   }, []);
+  console.log(properties);
 
   /* FILTER */
-  const filtered = properties
-  .filter((p) => p.purpose === "Buy")
+ const filtered = properties
+  .filter((p) => p.purpose === "Rent")
   .filter(
     (p) =>
       p.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -103,10 +103,10 @@ export default function PropertiesPage() {
     }
   };
 
+  /* LOADING */
   if (loading)
     return (
-      <div
-        className="min-h-screen flex items-center justify-center bg-cover bg-center">
+      <div className="min-h-screen flex items-center justify-center bg-cover bg-center">
         <div className="absolute inset-0 bg-black/60"></div>
         <WebLoader />
       </div>
@@ -118,27 +118,19 @@ export default function PropertiesPage() {
     <div
       className="min-h-screen bg-cover bg-center bg-fixed"
       style={{
-        backgroundImage: "linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1715870251864-64fd4a6ae4ad?q=80&w=627&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
-        
+        backgroundImage:
+          "linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=1800&q=80')",
       }}
     >
-
       {/* HERO */}
-      <div
-        className="relative h-64 pt-7 w-full bg-cover bg-center flex items-center justify-center"
-        // style={{
-        //   backgroundImage:
-        //     "url('https://images.unsplash.com/photo-1715870251864-64fd4a6ae4ad?q=80&w=627&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
-        // }}
-      >
-       
+      <div className="relative h-64 pt-7 w-full flex items-center justify-center">
         <h1 className="relative text-white text-3xl sm:text-5xl font-bold z-10 text-center px-4">
-          Explore Our Properties
+          Find Your Perfect Rental Home 
         </h1>
       </div>
 
       {/* CONTENT */}
-      <div className="max-w-[90%] px-6 sm:px-8 lg:px-12 py-12 bg-transparent rounded-3xl mt-[-60px] mx-6 sm:mx-auto shadow-lg border-2 border-white/30">
+      <div className="max-w-[90%] px-6 sm:px-8 lg:px-12 py-12 bg-transparent rounded-3xl -mt-15 mx-6 sm:mx-auto shadow-lg border-2 border-white/30">
         {/* SEARCH */}
         <div className="flex text-white justify-center mb-8">
           <input
@@ -146,7 +138,7 @@ export default function PropertiesPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by title or location..."
-            className="w-full md:w-1/3 px-5 py-3 rounded-full border shadow text-lg focus:outline-none placeholder:text-white border-white/70 focus:ring-2 focus:ring-green-500"
+            className="w-full md:w-1/3 px-5 py-3 rounded-full border shadow text-lg focus:outline-none placeholder:text-white border-white/70 focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -171,7 +163,7 @@ export default function PropertiesPage() {
                       <img
                         src={p.images[currentIndex]}
                         alt={p.title}
-                        className="h-full w-full object-cover transform transition-transform duration-500 ease-in-out hover:scale-105"
+                        className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                       />
 
                       {p.images.length > 1 && (
@@ -203,7 +195,7 @@ export default function PropertiesPage() {
                   <h2 className="text-2xl font-semibold mb-2 text-gray-800">{p.title}</h2>
                   <p className="text-gray-600 mb-2">📍 {p.location}</p>
                   <p className="text-gray-900 font-medium mb-3">
-                    {p.price ? `₹${p.price.toLocaleString()}` : "Price on request"}
+                    {p.price ? `₹${p.price.toLocaleString()} / month` : "Rent on request"}
                   </p>
                   <div className="flex gap-6 text-gray-700 text-sm sm:text-base font-medium">
                     {p.bedrooms !== undefined && <span>🛏 {p.bedrooms}</span>}
