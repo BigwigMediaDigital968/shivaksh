@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import WebLoader from "../../../components/WebLoader";
 
 interface Property {
   _id: string;
@@ -28,6 +29,10 @@ export default function PropertiesPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
+  /* IMAGE CAROUSEL STATE */
+  const [currentImages, setCurrentImages] = useState<{ [key: string]: number }>({});
+  const slideIntervals = useRef<{ [key: string]: NodeJS.Timeout }>({});
+
   /* FETCH PROPERTIES */
   const fetchProperties = async () => {
     try {
@@ -44,6 +49,9 @@ export default function PropertiesPage() {
 
   useEffect(() => {
     fetchProperties();
+    return () => {
+      Object.values(slideIntervals.current).forEach(clearInterval);
+    };
   }, []);
 
   /* FILTER */
@@ -58,13 +66,11 @@ export default function PropertiesPage() {
   const start = (currentPage - 1) * itemsPerPage;
   const paginated = filtered.slice(start, start + itemsPerPage);
 
-  /* IMAGE CAROUSEL STATE */
-  const [currentImages, setCurrentImages] = useState<{ [key: string]: number }>({});
-
+  /* IMAGE CONTROLS */
   const nextImage = (id: string, length: number) => {
     setCurrentImages((prev) => ({
       ...prev,
-      [id]: (prev[id] ?? 0) + 1 >= length ? 0 : (prev[id] ?? 0) + 1,
+      [id]: ((prev[id] ?? 0) + 1) % length,
     }));
   };
 
@@ -75,61 +81,94 @@ export default function PropertiesPage() {
     }));
   };
 
-  if (loading) return <p className="p-10 text-xl">Loading properties...</p>;
+  /* AUTO SLIDE */
+  const startAutoSlide = (id: string, length: number) => {
+    if (slideIntervals.current[id]) return;
+    slideIntervals.current[id] = setInterval(() => {
+      setCurrentImages((prev) => ({
+        ...prev,
+        [id]: ((prev[id] ?? 0) + 1) % length,
+      }));
+    }, 2500);
+  };
+
+  const stopAutoSlide = (id: string) => {
+    if (slideIntervals.current[id]) {
+      clearInterval(slideIntervals.current[id]);
+      delete slideIntervals.current[id];
+    }
+  };
+
+  if (loading)
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center bg-cover bg-center">
+        <div className="absolute inset-0 bg-black/60"></div>
+        <WebLoader />
+      </div>
+    );
+
   if (error) return <p className="p-10 text-red-600 text-xl">{error}</p>;
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div
+      className="min-h-screen bg-cover bg-center bg-fixed"
+      style={{
+        backgroundImage: "linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1715870251864-64fd4a6ae4ad?q=80&w=627&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
+        
+      }}
+    >
 
-      {/* HERO/BANNER */}
+      {/* HERO */}
       <div
-        className="relative h-64 sm:h-96 w-full bg-cover bg-center flex items-center justify-center"
-        style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1599423300746-b62533397364?auto=format&fit=crop&w=1600&q=80')",
-        }}
+        className="relative h-64 pt-7 w-full bg-cover bg-center flex items-center justify-center"
+        // style={{
+        //   backgroundImage:
+        //     "url('https://images.unsplash.com/photo-1715870251864-64fd4a6ae4ad?q=80&w=627&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
+        // }}
       >
-        <div className="absolute inset-0 bg-black/40"></div>
-        <h1 className="relative text-white text-3xl sm:text-5xl font-bold z-10">
+       
+        <h1 className="relative text-white text-3xl sm:text-5xl font-bold z-10 text-center px-4">
           Explore Our Properties
         </h1>
       </div>
 
-      {/* CONTENT SECTION */}
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12">
-
+      {/* CONTENT */}
+      <div className="max-w-[90%] px-6 sm:px-8 lg:px-12 py-12 bg-transparent rounded-3xl mt-[-60px] mx-6 sm:mx-auto shadow-lg border-2 border-white/30">
         {/* SEARCH */}
         <div className="flex justify-center mb-8">
           <input
             type="text"
             value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setCurrentPage(1);
-            }}
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by title or location..."
-            className="w-full md:w-1/3 px-5 py-3 rounded-full border shadow text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full md:w-1/3 px-5 py-3 rounded-full border shadow text-lg focus:outline-none placeholder:text-white border-white/70 focus:ring-2 focus:ring-green-500"
           />
         </div>
 
-        {/* PROPERTY GRID */}
+        {/* GRID */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
           {paginated.map((p) => {
             const currentIndex = currentImages[p._id] ?? 0;
+
             return (
               <div
                 key={p._id}
                 className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300"
               >
-                {/* IMAGE CAROUSEL */}
-                <div className="relative h-64 sm:h-80">
-                  {p.images && p.images.length > 0 ? (
+                {/* IMAGE */}
+                <div
+                  className="relative h-64 sm:h-80"
+                  onMouseEnter={() => startAutoSlide(p._id, p.images.length)}
+                  onMouseLeave={() => stopAutoSlide(p._id)}
+                >
+                  {p.images?.length > 0 ? (
                     <>
-                                        <img
-                      src={p.images[currentIndex]}
-                      alt={p.title}
-                      className="h-full w-full object-cover transform transition-transform duration-500 ease-in-out hover:scale-105"
-                    />
+                      <img
+                        src={p.images[currentIndex]}
+                        alt={p.title}
+                        className="h-full w-full object-cover transform transition-transform duration-500 ease-in-out hover:scale-105"
+                      />
 
                       {p.images.length > 1 && (
                         <>
@@ -155,12 +194,10 @@ export default function PropertiesPage() {
                   )}
                 </div>
 
-                {/* PROPERTY DETAILS */}
+                {/* DETAILS */}
                 <div className="p-6">
                   <h2 className="text-2xl font-semibold mb-2 text-gray-800">{p.title}</h2>
-                  <p className="text-gray-600 mb-2 flex items-center gap-1">
-                    <span>📍</span> {p.location}
-                  </p>
+                  <p className="text-gray-600 mb-2">📍 {p.location}</p>
                   <p className="text-gray-900 font-medium mb-3">
                     {p.price ? `₹${p.price.toLocaleString()}` : "Price on request"}
                   </p>
