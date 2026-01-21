@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import InlineEnquiryForm from "../../../components/EnquiryForm";
+import WebLoader from "@/app/components/WebLoader";
 
 interface Blog {
   title: string;
@@ -23,7 +24,6 @@ export default function BlogSlugPage() {
   const params = useParams();
   const slug = params?.slug as string;
   const router = useRouter();
-
   const [blog, setBlog] = useState<Blog | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -84,13 +84,14 @@ export default function BlogSlugPage() {
   };
 
   /* ---------------- LOADING ---------------- */
-  if (loading) {
+  if (loading)
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-full max-w-6xl h-[400px] bg-gray-200 animate-pulse rounded-xl" />
-      </div>
-    );
-  }
+      <div
+        className="min-h-screen flex items-center justify-center bg-cover bg-center">
+        <div className="absolute inset-0 bg-black/60"></div>
+        <WebLoader />
+    </div>
+  );
 
   /* ---------------- 404 ---------------- */
   if (notFound || !blog) {
