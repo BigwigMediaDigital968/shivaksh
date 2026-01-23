@@ -1,7 +1,20 @@
+"use client";
+
+import { useState } from "react";
 import Enquire from "../../../components/EnquiryForm";
 import Image from "next/image";
+import Webloader from "../../../components/WebLoader"
 
 export default function SellPropertyPage() {
+  const [loading, SetLoading] = useState(false);
+
+  if(loading){
+    return(
+      <div className="min-h-screen flex items-center text-center justify-center bg-cover bg-center">
+        <Webloader />
+      </div>
+    )
+  }
   return (
     <div className="min-h-screen">
       {/* FULL PAGE BACKGROUND */}
