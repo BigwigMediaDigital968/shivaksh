@@ -205,6 +205,7 @@ function Select({ label, ...props }: any) {
         <option value="Buy">Buy</option>
         <option value="Rent">Rent</option>
         <option value="Lease">Lease</option>
+
       </select>
     </div>
   );

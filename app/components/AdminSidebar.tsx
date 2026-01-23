@@ -12,6 +12,7 @@ import {
   LogOut,
   Menu,
   X,
+  Mail,
 } from "lucide-react";
 
 const menu = [
@@ -24,6 +25,11 @@ const menu = [
     name: "Leads",
     href: "/admin/leads",
     icon: Users,
+  },
+  {
+    name: "Enquire Leads",
+    href: "/admin/enquireLead",
+    icon: Mail,
   },
   {
     name: "Property",
