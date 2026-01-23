@@ -129,6 +129,7 @@ export default function BuyPropertiesPage() {
           "linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=1800&q=80')",
       }}
     >
+      
       {/* HERO */}
       <div className="relative h-64 pt-7 w-full flex items-center justify-center">
         <h1 className="text-white text-3xl sm:text-5xl font-bold text-center">
@@ -153,7 +154,6 @@ export default function BuyPropertiesPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
           {paginated.map((p) => {
             const currentIndex = currentImages[p._id] ?? 0;
-
             return (
               <Link href={`/properties/buy/${p.slug}`} key={p._id}>
                 <div className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition cursor-pointer">
