@@ -28,6 +28,7 @@ interface ChartData {
     date: string;
     leads: number;
     blogs: number;
+    views: number; // 🔥 new field for blog traffic
 }
 
 export default function AdminDashboardPage() {
@@ -36,35 +37,43 @@ export default function AdminDashboardPage() {
     const [loading, setLoading] = useState(true);
     const [chartData, setChartData] = useState<ChartData[]>([]);
 
-    // Fetch Leads and Blogs
+    // Fetch Leads, Blogs, and Blog Traffic
     useEffect(() => {
         async function fetchData() {
             setLoading(true);
             try {
-                const [leadsRes, blogsRes] = await Promise.all([
+                const [leadsRes, blogsRes, trafficRes] = await Promise.all([
                     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lead/all`),
                     fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog/viewblog`),
+                    fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog/analytics/views`), // 🔥 new
                 ]);
 
                 const leadsData: Lead[] = await leadsRes.json();
                 const blogsData: Blog[] = await blogsRes.json();
+                const trafficData: { date: string; views: number }[] = await trafficRes.json(); // 🔥 new
 
                 setLeads(leadsData || []);
                 setBlogs(blogsData || []);
 
-                // Prepare chart data (group by date)
-                const dateMap: Record<string, { leads: number; blogs: number }> = {};
+                // Group by date
+                const dateMap: Record<string, { leads: number; blogs: number; views: number }> = {};
 
                 leadsData.forEach((l) => {
                     const date = new Date(l.createdAt).toLocaleDateString();
-                    if (!dateMap[date]) dateMap[date] = { leads: 0, blogs: 0 };
+                    if (!dateMap[date]) dateMap[date] = { leads: 0, blogs: 0, views: 0 };
                     dateMap[date].leads += 1;
                 });
 
                 blogsData.forEach((b) => {
                     const date = new Date(b.datePublished).toLocaleDateString();
-                    if (!dateMap[date]) dateMap[date] = { leads: 0, blogs: 0 };
+                    if (!dateMap[date]) dateMap[date] = { leads: 0, blogs: 0, views: 0 };
                     dateMap[date].blogs += 1;
+                });
+
+                trafficData.forEach((t) => {
+                    const date = new Date(t.date).toLocaleDateString();
+                    if (!dateMap[date]) dateMap[date] = { leads: 0, blogs: 0, views: 0 };
+                    dateMap[date].views = t.views;
                 });
 
                 const chartArray: ChartData[] = Object.keys(dateMap)
@@ -73,6 +82,7 @@ export default function AdminDashboardPage() {
                         date,
                         leads: dateMap[date].leads,
                         blogs: dateMap[date].blogs,
+                        views: dateMap[date].views,
                     }));
 
                 setChartData(chartArray);
@@ -95,49 +105,40 @@ export default function AdminDashboardPage() {
             <div>
                 <h1 className="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
                 <p className="text-gray-500 mt-1">
-                    Overview of leads and blogs activity
+                    Overview of leads, blogs activity and blog traffic
                 </p>
             </div>
 
-            {/* ================= STATS CARDS ================= */}
+            {/* STATS CARDS */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* TOTAL BLOGS */}
                 <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-600 p-6 text-white shadow-lg">
-                    {/* Background Icon */}
                     <FileText className="absolute right-4 bottom-4 text-white/20" size={96} />
-
                     <div className="relative z-10 flex items-center gap-4">
                         <div className="p-4 rounded-2xl bg-white/20 backdrop-blur">
                             <FileText size={28} />
                         </div>
                         <div>
                             <p className="text-sm text-blue-100">Total Blogs</p>
-                            <h3 className="text-3xl font-bold">
-                                {loading ? "..." : totalBlogs}
-                            </h3>
+                            <h3 className="text-3xl font-bold">{loading ? "..." : totalBlogs}</h3>
                         </div>
                     </div>
                 </div>
 
                 {/* TOTAL LEADS */}
                 <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-600 to-pink-600 p-6 text-white shadow-lg">
-                    {/* Background Icon */}
                     <Users className="absolute right-4 bottom-4 text-white/20" size={96} />
-
                     <div className="relative z-10 flex items-center gap-4">
                         <div className="p-4 rounded-2xl bg-white/20 backdrop-blur">
                             <Users size={28} />
                         </div>
                         <div>
                             <p className="text-sm text-purple-100">Total Leads</p>
-                            <h3 className="text-3xl font-bold">
-                                {loading ? "..." : totalLeads}
-                            </h3>
+                            <h3 className="text-3xl font-bold">{loading ? "..." : totalLeads}</h3>
                         </div>
                     </div>
                 </div>
             </div>
-
 
             {/* ANALYTICS CHART */}
             <div className="bg-white rounded-2xl shadow-sm p-6 border">
@@ -151,6 +152,7 @@ export default function AdminDashboardPage() {
                             <Tooltip />
                             <Line type="monotone" dataKey="leads" name="Leads" stroke="#7c3aed" strokeWidth={2} />
                             <Line type="monotone" dataKey="blogs" name="Blogs" stroke="#3b82f6" strokeWidth={2} />
+                            <Line type="monotone" dataKey="views" name="Blog Views" stroke="#10b981" strokeWidth={2} /> {/* 🔥 Added */}
                         </LineChart>
                     </ResponsiveContainer>
                 ) : (

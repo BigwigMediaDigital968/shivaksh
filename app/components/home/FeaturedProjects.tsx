@@ -30,7 +30,7 @@ export default function FeaturedProjects() {
             <h2 className="mt-2 pt-3 text-3xl md:text-5xl font-bold font-heading text-[var(--text-primary)]">
               Where comfort meets craft
             </h2>
-            <p className="mt-5 pt-4 text-[var(--text-muted)] font-bold text-lg  font-body leading-relaxed">
+            <p className="mt-5 pt-4 text-[var(--text-muted)] font-bold text-lg  font-body leading-relaxed text-justify">
               A curated shortlist of verified developments—picked for location,
               build quality, and long-term value. (Slightly more modern + minimal
               than the reference theme.)
