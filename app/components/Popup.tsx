@@ -10,16 +10,18 @@ import ButtonFill from "./Button";
 interface PopupFormProps {
   open: boolean;
   onClose: () => void;
-  purpose?: "Buy" | "Sell";
+  purpose?: "Buy" | "Sell" | "Rent";
+  propertyType?: "Apartment" | "Builder Floor" | "Villa";
 }
 
-const PopupForm: React.FC<PopupFormProps> = ({ open, onClose, purpose }) => {
+const PopupForm: React.FC<PopupFormProps> = ({ open, onClose, purpose, propertyType }) => {
   const [step, setStep] = useState<"form" | "otp" | "success">("form");
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [selectedPurpose, setSelectedPurpose] = useState(purpose || "");
+  const [selectPropertyType, setSelectPropertyType] = useState(propertyType || "");
   const [message, setMessage] = useState("");
   const [otp, setOtp] = useState("");
 
@@ -130,6 +132,7 @@ const PopupForm: React.FC<PopupFormProps> = ({ open, onClose, purpose }) => {
     setPhone("");
     setMessage("");
     setOtp("");
+    setSelectPropertyType(propertyType || "");
     setSelectedPurpose(purpose || "");
     setError("");
   };
@@ -204,6 +207,16 @@ const PopupForm: React.FC<PopupFormProps> = ({ open, onClose, purpose }) => {
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-black placeholder-gray-500"
               />
+              <select
+                value={selectPropertyType}
+                onChange={(e) => setSelectPropertyType(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-black"
+              >
+                <option value="">Select Property Type</option>
+                <option>Apartment</option>
+                <option>Builder Floor</option>
+                <option>Villa</option>
+              </select>
 
               <select
                 value={selectedPurpose}
@@ -213,6 +226,7 @@ const PopupForm: React.FC<PopupFormProps> = ({ open, onClose, purpose }) => {
                 <option value="">Select Purpose</option>
                 <option>Buy</option>
                 <option>Sell</option>
+                <option>Rent</option>
               </select>
 
               <textarea

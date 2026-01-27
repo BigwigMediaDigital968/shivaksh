@@ -20,6 +20,7 @@ interface Lead {
   phone: string;
   message: string;
   purpose: string;
+  propertyType: string;
   verified: boolean;
   createdAt: string;
 }
@@ -157,6 +158,7 @@ export default function AdminLeadsPage() {
               <th className="p-6 text-left">Lead</th>
               <th className="p-6 text-left">Contact</th>
               <th className="p-6 text-left">Purpose</th>
+              <th className="p-6 text-left">Property Type</th>
               <th className="p-6 text-left">Message</th>
               <th className="p-6 text-center">Date</th>
             </tr>
@@ -186,7 +188,12 @@ export default function AdminLeadsPage() {
                     {lead.purpose}
                   </span>
                 </td>
-
+                <td className="p-6">
+                  <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm">
+                    {lead.propertyType}
+                  </span>
+                </td>
+                
                 <td className="p-6 text-gray-600 max-w-md">
                   {lead.message}
                 </td>
@@ -225,7 +232,11 @@ export default function AdminLeadsPage() {
                 <Phone size={14} /> {lead.phone}
               </p>
             </div>
-
+            <p className="mt-3">
+              <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm">
+                {lead.propertyType}
+              </span>
+            </p>
             <p className="mt-3 text-sm text-gray-600">
               {lead.message}
             </p>
