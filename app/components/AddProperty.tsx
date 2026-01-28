@@ -17,9 +17,9 @@ export default function AddProperty() {
     highlights: "",
     featuresAmenities: "",
     nearby: "",
+    extraHighlights: "",
     googleMapUrl: "",
     videoLink: "",
-    extraHighlights: "",
   });
 
   const [images, setImages] = useState<File[]>([]);
@@ -78,9 +78,9 @@ export default function AddProperty() {
         highlights: "",
         featuresAmenities: "",
         nearby: "",
+        extraHighlights: "",
         googleMapUrl: "",
         videoLink: "",
-        extraHighlights: "",
       });
       setImages([]);
       setJsonPreview(null);
@@ -92,9 +92,15 @@ export default function AddProperty() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-500 via-purple-500 to-blue-600 p-6">
-      <div className="w-full max-w-5xl bg-white/95 backdrop-blur rounded-3xl shadow-2xl p-6 md:p-10">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+    <div
+      className="min-h-screen flex items-center justify-center bg-cover bg-center p-6"
+      style={{
+        backgroundImage:
+          "url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=80')",
+      }}
+    >
+      <div className="bg-white/70 bg-opacity-95 backdrop-blur-md rounded-3xl shadow-2xl p-8 w-full max-w-5xl">
+        <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
           Add New Property
         </h1>
 
@@ -102,45 +108,168 @@ export default function AddProperty() {
           <p className="mb-4 text-center font-medium text-green-600">{message}</p>
         )}
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Left column */}
-          <div className="space-y-3">
-            <Input label="Title" name="title" value={formData.title} onChange={handleChange} required />
-            <Textarea label="Description" name="description" value={formData.description} onChange={handleChange} />
-            <Select label="Purpose" name="purpose" value={formData.purpose} onChange={handleChange} />
-            <Input label="Location" name="location" value={formData.location} onChange={handleChange} required />
-            <Input label="Google Map URL" name="googleMapUrl" value={formData.googleMapUrl} onChange={handleChange} />
-            <Input label="Video Link" name="videoLink" value={formData.videoLink} onChange={handleChange} />
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Top Row: Title & Location */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <InputField className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-black placeholder-gray-500"
+              label="Title"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              required
+            />
+            <InputField
+              label="Location"
+              name="location"
+              value={formData.location}
+              onChange={handleChange}
+              required
+            />
           </div>
 
-          {/* Right column */}
-          <div className="space-y-3">
-            <div className="grid grid-cols-3 gap-3">
-              <Input label="Price" type="number" name="price" value={formData.price} onChange={handleChange} />
-              <Input label="Beds" type="number" name="bedrooms" value={formData.bedrooms} onChange={handleChange} />
-              <Input label="Baths" type="number" name="bathrooms" value={formData.bathrooms} onChange={handleChange} />
+          {/* Purpose & Price */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <SelectField
+              label="Purpose"
+              name="purpose"
+              value={formData.purpose}
+              onChange={handleChange}
+              options={["Buy", "Rent", "Lease"]}
+            />
+            <InputField
+              label="Price"
+              name="price"
+              type="number"
+              value={formData.price}
+              onChange={handleChange}
+            />
+            <InputField
+              label="Area (sqft)"
+              name="areaSqft"
+              type="number"
+              value={formData.areaSqft}
+              onChange={handleChange}
+            />
+          </div>
+
+          {/* Beds & Baths */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <InputField
+              label="Bedrooms"
+              name="bedrooms"
+              type="number"
+              value={formData.bedrooms}
+              onChange={handleChange}
+            />
+            <InputField
+              label="Bathrooms"
+              name="bathrooms"
+              type="number"
+              value={formData.bathrooms}
+              onChange={handleChange}
+            />
+            <InputField
+              label="Google Map URL"
+              name="googleMapUrl"
+              value={formData.googleMapUrl}
+              onChange={handleChange}
+            />
+            <InputField
+              label="Video Link"
+              name="videoLink"
+              value={formData.videoLink}
+              onChange={handleChange}
+            />
+          </div>
+
+          {/* Description */}
+          <TextareaField
+            label="Description"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+          />
+
+          {/* Array Fields */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <InputField
+              label="Highlights"
+              name="highlights"
+              value={formData.highlights}
+              onChange={handleChange}
+              placeholder="Comma separated"
+            />
+            <InputField
+              label="Features & Amenities"
+              name="featuresAmenities"
+              value={formData.featuresAmenities}
+              onChange={handleChange}
+              placeholder="Comma separated"
+            />
+            <InputField
+              label="Nearby"
+              name="nearby"
+              value={formData.nearby}
+              onChange={handleChange}
+              placeholder="Comma separated"
+            />
+            <InputField
+              label="Extra Highlights"
+              name="extraHighlights"
+              value={formData.extraHighlights}
+              onChange={handleChange}
+              placeholder="Comma separated"
+            />
+          </div>
+
+          {/* Image Upload */}
+          <div>
+            <label className="block font-medium mb-2">Upload Images</label>
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handleImageChange}
+              className="w-full text-sm"
+            />
+            <div className="grid grid-cols-4 gap-3 mt-3">
+              {images.map((file, idx) => (
+                <div
+                  key={idx}
+                  className="relative group border rounded-lg overflow-hidden shadow-lg"
+                >
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt="preview"
+                    className="w-full h-24 object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setImages(images.filter((_, i) => i !== idx))
+                    }
+                    className="absolute top-1 right-1 bg-red-600 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
             </div>
-            <Input label="Area (Sqft)" type="number" name="areaSqft" value={formData.areaSqft} onChange={handleChange} />
-            <Input label="Highlights" name="highlights" value={formData.highlights} onChange={handleChange} />
-            <Input label="Features & Amenities" name="featuresAmenities" value={formData.featuresAmenities} onChange={handleChange} />
-            <Input label="Nearby" name="nearby" value={formData.nearby} onChange={handleChange} />
-            <Input label="Extra Highlights" name="extraHighlights" value={formData.extraHighlights} onChange={handleChange} />
-            <input type="file" multiple accept="image/*" onChange={handleImageChange} className="w-full text-sm" />
           </div>
 
           {/* Actions */}
-          <div className="md:col-span-2 flex justify-between items-center mt-4">
+          <div className="flex justify-between mt-4">
             <button
               type="button"
               onClick={handlePreview}
-              className="px-5 py-2 rounded-full bg-gray-200 hover:bg-gray-300 text-sm font-medium"
+              className="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm font-medium"
             >
               Preview JSON
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 rounded-full bg-gradient-to-r from-blue-600 to-pink-500 text-white font-semibold shadow hover:opacity-90"
+              className="px-6 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:opacity-90"
             >
               {loading ? "Submitting…" : "Add Property"}
             </button>
@@ -148,8 +277,8 @@ export default function AddProperty() {
         </form>
 
         {jsonPreview && (
-          <div className="mt-6 bg-gray-50 border rounded-xl p-4 text-sm">
-            <pre className="overflow-x-auto">{JSON.stringify(jsonPreview, null, 2)}</pre>
+          <div className="mt-6 bg-gray-50 border rounded-xl p-4 text-sm max-h-60 overflow-auto">
+            <pre>{JSON.stringify(jsonPreview, null, 2)}</pre>
           </div>
         )}
       </div>
@@ -157,57 +286,46 @@ export default function AddProperty() {
   );
 }
 
-/* Reusable UI components */
-function Input({ label, ...props }: any) {
+/* Reusable Components */
+function InputField({ label, ...props }: any) {
   return (
     <div>
-      <label className="block text-sm font-semibold text-gray-700 mb-1">
-        {label}
-      </label>
+      {label && <label className="block font-medium mb-1">{label}</label>}
       <input
         {...props}
-        className="w-full px-3 py-2 text-sm rounded-xl border border-gray-300
-                   focus:ring-2 focus:ring-blue-400 focus:outline-none"
+        className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none bg-white text-black"
       />
     </div>
   );
 }
 
-
-function Textarea({ label, ...props }: any) {
+function TextareaField({ label, ...props }: any) {
   return (
     <div>
-      <label className="block text-sm font-semibold text-gray-700 mb-1">
-        {label}
-      </label>
+      {label && <label className="block font-medium mb-1">{label}</label>}
       <textarea
         {...props}
         rows={3}
-        className="w-full px-3 py-2 text-sm rounded-xl border border-gray-300
-                   focus:ring-2 focus:ring-pink-400 focus:outline-none"
+        className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-pink-400 focus:outline-none bg-white text-black"
       />
     </div>
   );
 }
 
-
-function Select({ label, ...props }: any) {
+function SelectField({ label, options, ...props }: any) {
   return (
     <div>
-      <label className="block text-sm font-semibold text-gray-700 mb-1">
-        {label}
-      </label>
+      {label && <label className="block font-medium mb-1">{label}</label>}
       <select
         {...props}
-        className="w-full px-3 py-2 text-sm rounded-xl border border-gray-300
-                   focus:ring-2 focus:ring-purple-400 focus:outline-none"
+        className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-400 focus:outline-none bg-white text-black"
       >
-        <option value="Buy">Buy</option>
-        <option value="Rent">Rent</option>
-        <option value="Lease">Lease</option>
-
+        {options.map((opt: string) => (
+          <option key={opt} value={opt}>
+            {opt}
+          </option>
+        ))}
       </select>
     </div>
   );
 }
-
