@@ -112,52 +112,54 @@ export default function AdminSidebar() {
       </div>
 
       {/* ================= DESKTOP SIDEBAR ================= */}
-      <aside className="hidden md:flex md:flex-col w-64 h-screen bg-white border-r shadow-lg">
-        {/* HEADER */}
-        <div className="px-6 py-6 bg-gradient-to-r from-purple-600 to-indigo-500 text-white">
-          <h2 className="text-2xl font-extrabold tracking-wide">Admin Panel</h2>
-          <p className="text-sm mt-1 font-medium text-gray-200">
-            Shivaksh Management
-          </p>
-        </div>
+{/* ================= DESKTOP SIDEBAR ================= */}
+    <aside className="hidden md:fixed md:inset-y-0 md:left-0 md:flex md:flex-col w-64 bg-white border-r shadow-lg z-40">
+      {/* HEADER */}
+      <div className="px-6 py-6 bg-gradient-to-r from-purple-600 to-indigo-500 text-white">
+        <h2 className="text-2xl font-extrabold tracking-wide">Admin Panel</h2>
+        <p className="text-sm mt-1 font-medium text-gray-200">
+          Shivaksh Management
+        </p>
+      </div>
 
-        {/* NAVIGATION */}
-        <nav className="flex-1 px-4 py-6 space-y-2">
-          {menu.map((item) => {
-            const Icon = item.icon;
-            const active = pathname === item.href;
+      {/* NAVIGATION (SCROLLABLE) */}
+      <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+        {menu.map((item) => {
+          const Icon = item.icon;
+          const active = pathname === item.href;
 
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 px-5 py-3 rounded-xl transition text-lg font-semibold
-                  ${
-                    active
-                      ? "bg-blue-100 text-blue-700"
-                      : "text-gray-700 hover:bg-gray-100"
-                  }`}
-              >
-                <Icon size={20} />
-                {item.name}
-              </Link>
-            );
-          })}
-        </nav>
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex items-center gap-3 px-5 py-3 rounded-xl transition text-lg font-semibold
+                ${
+                  active
+                    ? "bg-blue-100 text-blue-700"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+            >
+              <Icon size={20} />
+              {item.name}
+            </Link>
+          );
+        })}
+      </nav>
 
-        {/* LOGOUT */}
-        <div className="p-4 border-t">
-          <button
-            onClick={handleLogout}
-            className="flex items-center justify-center gap-2 w-full px-4 py-3
-            rounded-xl border text-red-600 font-semibold text-lg
-            hover:bg-red-50 transition"
-          >
-            <LogOut size={20} />
-            Logout
-          </button>
-        </div>
-      </aside>
+      {/* LOGOUT (STICKY BOTTOM) */}
+      <div className="p-4 border-t bg-white">
+        <button
+          onClick={handleLogout}
+          className="flex items-center justify-center gap-2 w-full px-4 py-3
+          rounded-xl border text-red-600 font-semibold text-lg
+          hover:bg-red-50 transition"
+        >
+          <LogOut size={20} />
+          Logout
+        </button>
+      </div>
+    </aside>
+
     </>
   );
 }
