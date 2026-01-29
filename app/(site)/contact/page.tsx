@@ -122,7 +122,7 @@ export default function ContactPage() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className=" pb-7 justify-center gap-5 border-4 rounded-2xl border-white items-center text-center "
+            className=" p-7 justify-center gap-5 border-2 rounded-2xl border-white/70 items-center text-center  "
           >
               <h3 className="text-4xl font-semibold text-center mb-2 text-white">
                 Enquire Now
