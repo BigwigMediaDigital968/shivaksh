@@ -1,100 +1,97 @@
 "use client";
 
 import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 
 const faqs = [
   {
-    question: "How do you verify properties before listing?",
+    question: "Are all properties verified before listing?",
     answer:
-      "Every property is thoroughly checked for ownership, approvals, legal documentation, and market authenticity before being shared with clients.",
+      "Yes. Every property goes through a strict verification process covering ownership documents, approvals, and market authenticity to ensure complete transparency.",
   },
   {
-    question: "Do you assist with negotiations and paperwork?",
+    question: "Do you assist beyond property shortlisting?",
     answer:
-      "Yes. We support our clients through negotiations, agreement drafting, documentation, and registration to ensure a smooth transaction.",
+      "Absolutely. We provide end-to-end assistance — from shortlisting and site visits to negotiation, legal coordination, and final possession.",
   },
   {
-    question: "Are there any hidden charges involved?",
+    question: "Which locations do you specialize in?",
     answer:
-      "No. We follow a completely transparent approach with clear communication and no hidden costs at any stage of the process.",
+      "We specialize in high-growth micro-markets across Delhi NCR, including Gurgaon, Noida, and emerging investment corridors.",
   },
   {
-    question: "Do you deal in both residential and commercial properties?",
+    question: "Is there support for first-time investors?",
     answer:
-      "Yes. Our portfolio includes residential, commercial, rental, and investment-focused opportunities.",
+      "Yes. Our advisory approach is designed to guide first-time buyers with clarity, risk assessment, and long-term investment planning.",
   },
 ];
 
 export default function FAQSection() {
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+
+  const toggleFAQ = (index: number) => {
+    setActiveIndex(activeIndex === index ? null : index);
+  };
 
   return (
-    <section className="bg-[var(--secondary-bg)] py-20">
-      <div className="w-11/12 md:w-5/6 mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-          {/* LEFT — CONTEXT PANEL */}
-          <div className="max-w-md">
-            <p className="text-sm tracking-[0.3em] uppercase text-[var(--primary-color)] font-body">
-              FAQs
-            </p>
+    <section
+      className="relative py-32 md:py-40 bg-cover bg-center"
+      style={{
+        backgroundImage:
+          "url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80')",
+      }}
+    >
+      {/* Dark Overlay */}
+      <div className="absolute inset-0 bg-black/65" />
 
-            <h2 className="mt-4 text-4xl md:text-5xl font-heading text-[var(--text-primary)]">
-              Clear Answers Before You Decide
-            </h2>
+      <div className="relative w-11/12 md:w-4/6 mx-auto">
+        {/* Heading */}
+        <div className="text-center mb-16">
+          <p className="text-sm tracking-widest text-yellow-400 uppercase mb-3">
+            FAQs
+          </p>
+          <h2 className="text-3xl md:text-4xl font-serif text-white">
+            Frequently Asked Questions
+          </h2>
+          <p className="mt-4 text-white/80 max-w-2xl mx-auto">
+            Clear answers to help you make confident property decisions.
+          </p>
+        </div>
 
-            <p className="mt-6 text-[var(--text-muted)] font-body leading-relaxed">
-              Buying or investing in property involves important decisions.
-              These answers address the most common concerns we hear from buyers
-              and investors before they move forward.
-            </p>
+        {/* FAQ Cards */}
+        <div className="space-y-6">
+          {faqs.map((faq, index) => (
+            <div
+              key={index}
+              className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl overflow-hidden"
+            >
+              <button
+                onClick={() => toggleFAQ(index)}
+                className="w-full flex items-center justify-between px-6 md:px-8 py-6 text-left"
+              >
+                <h3 className="text-white text-base md:text-lg font-medium">
+                  {faq.question}
+                </h3>
+                <ChevronDown
+                  className={`text-white transition-transform duration-300 ${
+                    activeIndex === index ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
 
-            {/* TRUST NOTE */}
-            <div className="mt-10 border-l-4 border-[var(--primary-color)] pl-6">
-              <p className="font-heading text-lg text-[var(--text-primary)]">
-                Transparency Comes First
-              </p>
-              <p className="text-sm text-[var(--text-muted)] font-body mt-2">
-                We believe informed clients make confident decisions.
-              </p>
+              <div
+                className={`px-6 md:px-8 transition-all duration-300 ease-in-out ${
+                  activeIndex === index
+                    ? "max-h-40 pb-6 opacity-100"
+                    : "max-h-0 overflow-hidden opacity-0"
+                }`}
+              >
+                <p className="text-white/80 leading-relaxed">
+                  {faq.answer}
+                </p>
+              </div>
             </div>
-          </div>
-
-          {/* RIGHT — FAQ ACCORDION */}
-          <div className="space-y-4">
-            {faqs.map((item, index) => {
-              const isOpen = openIndex === index;
-
-              return (
-                <div
-                  key={index}
-                  className="border border-[var(--border-color)] bg-white"
-                >
-                  <button
-                    onClick={() => setOpenIndex(isOpen ? null : index)}
-                    className="w-full flex items-center justify-between px-6 py-5 text-left"
-                  >
-                    <span className="font-heading text-lg text-[var(--text-primary)]">
-                      {item.question}
-                    </span>
-
-                    <span
-                      className={`text-2xl font-light text-[var(--primary-color)] transition-transform duration-300 ${
-                        isOpen ? "rotate-45" : ""
-                      }`}
-                    >
-                      +
-                    </span>
-                  </button>
-
-                  {isOpen && (
-                    <div className="px-6 pb-5 text-sm font-body text-[var(--text-muted)] leading-relaxed">
-                      {item.answer}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+          ))}
         </div>
       </div>
     </section>

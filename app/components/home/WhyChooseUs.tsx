@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+
 const points = [
   {
     title: "Verified & Genuine Listings",
@@ -20,74 +22,93 @@ const points = [
 ];
 
 export default function WhyChooseUs() {
+  const sectionRef = useRef<HTMLDivElement | null>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => entry.isIntersecting && setVisible(true),
+      { threshold: 0.3 }
+    );
+
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section className="bg-[var(--secondary-bg)] py-12">
-      <div className="w-11/12 md:w-5/6 mx-auto">
-        {/* GRID */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-          {/* LEFT — AUTHORITY PANEL */}
-          <div className="relative">
-            <div className=" max-w-lg">
-              <p className="text-sm tracking-[0.3em] uppercase text-[var(--primary-color)] font-body">
-                Why Choose Us
+    <section
+      ref={sectionRef}
+      className="relative py-24 bg-cover bg-center"
+      style={{
+        backgroundImage:
+          "url('https://images.unsplash.com/photo-1600585154084-4e5fe7c39198?q=80&w=2070&auto=format&fit=crop')",
+      }}
+    >
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black/85 via-black/70 to-[#0f2d1f]/90" />
+
+      <div className="relative w-11/12 md:w-5/6 mx-auto">
+
+        {/* HEADER BOX */}
+        <div className="max-w-2xl mb-20 backdrop-blur-xl bg-black/40 p-12 rounded-3xl border border-white/15 shadow-2xl">
+          <p className="text-sm tracking-[0.3em] uppercase text-yellow-400 font-semibold">
+            Why Choose Us
+          </p>
+
+          <h2 className="mt-6 text-4xl md:text-5xl font-heading font-extrabold text-white leading-tight">
+            Real Estate Decisions <br /> Built on Trust
+          </h2>
+
+          {/* STATS */}
+          <div
+            className={`mt-10 grid grid-cols-2 gap-6 max-w-md transition-all duration-700 ${
+              visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            }`}
+          >
+            <div className="border border-white/20 p-6 rounded-2xl bg-black/50">
+              <p className="font-heading text-4xl text-yellow-400">10+</p>
+              <p className="mt-1 text-sm text-white/70">
+                Years of Experience
               </p>
+            </div>
 
-              <h2 className="mt-4 text-4xl md:text-5xl font-heading text-[var(--text-primary)]">
-                Real Estate Decisions <br /> Built on Trust
-              </h2>
-
-              <p className="mt-6 font-body text-[var(--text-muted)] leading-relaxed">
-                We operate as real estate advisors, not brokers. Our approach is
-                rooted in market intelligence, transparency, and long-term value
-                creation for every client.
+            <div className="border border-white/20 p-6 rounded-2xl bg-black/50">
+              <p className="font-heading text-4xl text-yellow-400">500+</p>
+              <p className="mt-1 text-sm text-white/70">
+                Verified Listings
               </p>
-
-              {/* AUTHORITY STAT */}
-              <div className="mt-10 border-t border-[var(--border-color)] pt-6 md:flex lg:flex-col gap-5">
-                <div className="border border-[var(--border-color)] w-full p-2">
-                  <p className="font-heading text-3xl text-[var(--primary-color)]">
-                    10+ Years
-                  </p>
-                  <p className="text-sm text-[var(--text-muted)] font-body">
-                    Experience in premium residential & commercial markets
-                  </p>
-                </div>
-                <div className="border border-[var(--border-color)] w-full p-2">
-                  <p className="font-heading text-3xl text-[var(--primary-color)]">
-                    500+
-                  </p>
-                  <p className="text-sm text-[var(--text-muted)] font-body">
-                    Verified Listings
-                  </p>
-                </div>
-              </div>
             </div>
           </div>
+        </div>
 
-          {/* RIGHT — TRUST LEDGER */}
-          <div className="relative">
-            {/* GOLD SPINE */}
-            <div className="absolute left-4 top-0 bottom-0 w-px bg-[var(--primary-color)]/50" />
+        {/* POINTS */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {points.map((item, i) => (
+            <div
+              key={i}
+              style={{ transitionDelay: `${i * 0.15}s` }}
+              className={`backdrop-blur-xl bg-black/40 p-8 rounded-3xl border border-white/15 shadow-xl transition-all duration-500
+                ${
+                  visible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-10"
+                }
+                hover:-translate-y-1 hover:border-[var(--primary-color)]
+              `}
+            >
+              <p className="font-heading text-4xl text-white/20 mb-4">
+                {String(i + 1).padStart(2, "0")}
+              </p>
 
-            <div className="space-y-12 pl-14">
-              {points.map((item, i) => (
-                <div key={i} className="relative">
-                  {/* NUMBER */}
-                  <span className="absolute -left-14 top-0 font-heading text-3xl text-[var(--primary-color)]">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
+              <h3 className="font-heading text-xl font-bold text-white mb-3">
+                {item.title}
+              </h3>
 
-                  {/* TEXT */}
-                  <h3 className="font-heading text-xl text-[var(--text-primary)] mb-2">
-                    {item.title}
-                  </h3>
-                  <p className="font-body text-sm text-[var(--text-muted)] leading-relaxed max-w-md">
-                    {item.desc}
-                  </p>
-                </div>
-              ))}
+              <p className="text-sm text-white/80 leading-relaxed">
+                {item.desc}
+              </p>
             </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>

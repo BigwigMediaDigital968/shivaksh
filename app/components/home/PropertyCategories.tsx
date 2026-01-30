@@ -2,300 +2,207 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
-import img1 from "../../assets/hero/aboutpage.jpg";
-import img2 from "../../assets/hero/aboutpage.jpg";
-import img3 from "../../assets/hero/aboutpage.jpg";
-import img4 from "../../assets/hero/aboutpage.jpg";
-import img5 from "../../assets/hero/aboutpage.jpg";
-import img6 from "../../assets/hero/aboutpage.jpg";
-import { useState } from "react";
+interface Property {
+  _id: string;
+  title: string;
+  slug: string;
+  location: string;
+  price?: number;
+  images: string[];
+  createdAt: string;
+  purpose: "Buy" | "Rent" | "Sell";
+}
 
 const categories = [
   {
-    title: "Luxury Villas & Independent Homes",
-    desc: "Bespoke villas and private residences for premium living.",
-    image: img1,
-    link: "/properties/luxury",
+    title: "Apartments",
+    desc: "Modern homes in prime locations, perfect for families and investors.",
+    image:
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+    link: "/properties/buy",
   },
   {
-    title: "Apartments & Builder Floors",
-    desc: "Modern homes in prime and emerging locations.",
-    image: img2,
-    link: "/properties/apartments",
+    title: "Builder Floors",
+    desc: "Spacious and premium builder floors designed for luxury living.",
+    image:
+      "https://images.unsplash.com/photo-1599423300746-b62533397364?auto=format&fit=crop&w=800&q=80",
+    link: "/properties/buy",
   },
   {
-    title: "Commercial Spaces",
-    desc: "Retail, office, and business-centric developments.",
-    image: img3,
-    link: "/properties/commercial",
-  },
-  {
-    title: "Plots & Land",
-    desc: "Residential and investment-ready land parcels.",
-    image: img4,
-    link: "/properties/plots",
-  },
-  {
-    title: "Rentals & Leasing",
-    desc: "Residential and commercial rental options.",
-    image: img5,
-    link: "/properties/rentals",
-  },
-  {
-    title: "Investment Properties",
-    desc: "High-growth assets with long-term ROI potential.",
-    image: img6,
-    link: "/properties/investment",
-  },
-];
-
-const properties = [
-  {
-    title: "Luxury Builder Floor",
-    location: "DLF Phase 2, Gurgaon",
-    price: "₹3.2 Cr Onwards",
-    image: img1,
-    link: "/properties/luxury-builder-floor",
-  },
-  {
-    title: "Premium 3 BHK Apartment",
-    location: "Golf Course Road",
-    price: "₹2.1 Cr Onwards",
-    image: img2,
-    link: "/properties/3bhk-golf-course",
-  },
-  {
-    title: "Independent Villa",
-    location: "Sushant Lok",
-    price: "₹6.5 Cr Onwards",
-    image: img3,
-    link: "/properties/independent-villa",
-  },
-  {
-    title: "Commercial Office Space",
-    location: "Cyber City",
-    price: "₹1.8 Cr Onwards",
-    image: img4,
-    link: "/properties/commercial-office",
+    title: "Villas",
+    desc: "Independent villas with exclusive amenities and privacy.",
+    image:
+      "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=800&q=80",
+    link: "/properties/buy",
   },
 ];
 
 export default function PropertyCategoriesHover() {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const [properties, setProperties] = useState<Property[]>([]);
   const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    const fetchProperties = async () => {
+      const res = await fetch(`${API_URL}/property`);
+      const data = await res.json();
+      const buy = data
+        .filter((p: Property) => p.purpose === "Buy")
+        .sort(
+          (a: Property, b: Property) =>
+            new Date(b.createdAt).getTime() -
+            new Date(a.createdAt).getTime()
+        )
+        .slice(0, 3);
+      setProperties(buy);
+    };
+    fetchProperties();
+  }, [API_URL]);
+
+  if (!properties.length)
+    return <p className="text-white text-center py-20">Loading properties...</p>;
+
   return (
-    <>
-      <section className="bg-[var(--secondary-bg)] py-12">
-        <div className="w-11/12 md:w-5/6 mx-auto">
-          {/* HEADER */}
-          <div className="max-w-2xl mb-14">
-            <p className="text-xl tracking-[0.2em] uppercase
-                text-[var(--primary-color)]
-                font-body font-semibold">
-              Property Categories
-            </p>
-            <h2 className="mt-4 text-4xl md:text-5xl font-heading text-[var(--text-primary)]">
-              Explore Spaces That Define Your Lifestyle
-            </h2>
-          </div>
+<section
+  className="relative py-20 bg-cover bg-center"
+  style={{
+    backgroundImage:
+      "url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2070&auto=format&fit=crop')",
+  }}
+>
+  {/* Global overlay */}
+  <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/65 to-[#0f2d1f]/85" />
 
-          {/* HOVER GRID */}
-          <div
+  <div className="relative w-11/12 md:w-5/6 mx-auto">
+
+    {/* HEADER */}
+    <div className="max-w-2xl mb-16 backdrop-blur-xl bg-black/40 p-10 rounded-3xl border border-white/15 shadow-2xl">
+      <p className="text-sm tracking-[0.3em] uppercase text-yellow-400 font-semibold">
+        Property Categories
+      </p>
+      <h2 className="mt-4 text-4xl md:text-5xl text-white font-heading font-extrabold leading-tight">
+        Explore Spaces That Define Your Lifestyle
+      </h2>
+    </div>
+
+    {/* CATEGORIES */}
+    <div className="flex lg:grid lg:grid-cols-3 gap-6 overflow-x-auto lg:overflow-visible snap-x snap-mandatory mb-20">
+      {categories.map((item, i) => (
+        <Link
+          key={i}
+          href={item.link}
+          className="
+            group relative min-w-[85%] sm:min-w-[70%] md:min-w-[55%] lg:min-w-0
+            h-[300px] rounded-2xl overflow-hidden
+            border border-white/15
+            backdrop-blur-xl bg-black/30
+            snap-start
+            transition-all duration-500
+            hover:-translate-y-1 hover:shadow-2xl
+          "
+        >
+          {/* IMAGE */}
+          <Image
+            src={item.image}
+            alt={item.title}
+            fill
             className="
-    flex lg:grid
-    lg:grid-cols-3
-    overflow-x-auto lg:overflow-visible
-    snap-x snap-mandatory
-    scrollbar-hide
-    gap-4 lg:gap-px
-    pb-4
-  "
+              object-cover
+              brightness-[0.45]
+              transition-all duration-700
+              group-hover:brightness-100
+              group-hover:scale-110
+            "
+          />
+
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+
+          {/* TEXT */}
+          <div className="relative z-10 h-full flex flex-col justify-between p-8">
+            <div>
+              <h3 className="text-2xl font-heading font-bold text-white">
+                {item.title}
+              </h3>
+              <div className="mt-3 h-px w-12 bg-[var(--primary-color)]" />
+              <p className="mt-4 text-sm text-white/85 max-w-xs leading-relaxed">
+                {item.desc}
+              </p>
+            </div>
+            <span className="text-sm text-[var(--primary-color)] font-semibold">
+              View Properties →
+            </span>
+          </div>
+        </Link>
+      ))}
+    </div>
+
+    {/* FEATURED PROPERTIES */}
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 items-start">
+
+      {/* IMAGE LEFT */}
+      <div className="lg:col-span-2 relative h-[440px] rounded-3xl overflow-hidden border border-white/15 shadow-2xl">
+        <Image
+          src={properties[active].images[0]}
+          alt={properties[active].title}
+          fill
+          className="object-cover"
+        />
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+
+        <div className="absolute bottom-6 left-6 right-6 backdrop-blur-lg bg-black/40 p-6 rounded-2xl border border-white/10">
+          <h3 className="text-2xl text-white font-heading font-bold">
+            {properties[active].title}
+          </h3>
+          <p className="text-sm text-white/80">
+            {properties[active].location}
+          </p>
+          <p className="mt-2 text-lg text-[var(--primary-color)] font-semibold">
+            {properties[active].price
+              ? `₹${properties[active].price.toLocaleString()}`
+              : "Price on request"}
+          </p>
+        </div>
+      </div>
+
+      {/* LIST RIGHT */}
+      <div className="space-y-5 backdrop-blur-xl bg-black/40 p-8 rounded-3xl border border-white/15 shadow-2xl">
+        {properties.map((p, i) => (
+          <button
+            key={p._id}
+            onClick={() => setActive(i)}
+            className={`
+              w-full text-left px-6 py-4 rounded-2xl border transition-all duration-300
+              ${
+                active === i
+                  ? "border-[var(--primary-color)] bg-white text-black"
+                  : "border-white/20 bg-black/30 text-white hover:bg-black/50"
+              }
+            `}
           >
-            {categories.map((item, i) => (
-              <Link
-                key={i}
-                href={item.link}
-                className="
-  group relative
-  min-w-[85%] sm:min-w-[70%] md:min-w-[55%]
-  lg:min-w-0
-  h-[300px] md:h-[280px] lg:h-[260px]
-  bg-[var(--secondary-bg)]
-  overflow-hidden
-  snap-start
-"
-              >
-                {/* IMAGE (hidden by default) */}
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  fill
-                  className="object-cover lg:opacity-0 opacity-100 lg:group-hover:opacity-100 transition-opacity duration-700"
-                />
-
-                {/* DARK OVERLAY */}
-                <div className="absolute inset-0 bg-black/55 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-
-                {/* CONTENT */}
-                <div className="relative z-10 h-full flex flex-col justify-between p-8">
-                  <div>
-                    <h3
-                      className="
-                      font-heading text-2xl
-                      text-[var(--text-primary)]
-                      text-white lg:text-[var(--primary-bg)]
-                      group-hover:text-white
-                      transition-colors duration-500
-                    "
-                    >
-                      {item.title}
-                    </h3>
-
-                    <div
-                      className="
-                      mt-4 h-px w-12
-                      bg-[var(--primary-color)]
-                      transition-all duration-500
-                      group-hover:w-20
-                    "
-                    />
-
-                    <p
-                      className="
-                      mt-4 text-sm text-white/80
-                       translate-y-4
-                      lg:opacity-0 opacity-100 lg:group-hover:opacity-100 group-hover:translate-y-0
-                      transition-all duration-500
-                      max-w-xs
-                    "
-                    >
-                      {item.desc}
-                    </p>
-                  </div>
-
-                  <span
-                    className="
-                    text-sm font-body tracking-wide
-                    text-[var(--primary-color)]
-                   lg:opacity-0 opacity-100 lg:group-hover:opacity-100
-                    transition-opacity duration-500
-                  "
-                  >
-                    View Properties →
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-[var(--secondary-bg)] py-12">
-        <div className="w-11/12 md:w-5/6 mx-auto">
-          {/* HEADER */}
-          <div className="mb-12 max-w-xl">
-            <p className="text-xl tracking-[0.2em] uppercase
-                text-[var(--primary-color)]
-                font-body font-semibold">
-              Featured Property
+            <h4 className="text-lg font-bold">{p.title}</h4>
+            <p className="text-sm text-[var(--primary-color)]">
+              {p.location}
             </p>
-            <h2 className="mt-3 text-3xl md:text-4xl font-heading text-[var(--text-primary)]">
-              A Curated Selection, Not a Catalogue
-            </h2>
-          </div>
+          </button>
+        ))}
 
-          {/* SPOTLIGHT */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-start">
-            {/* LIST (Mobile + Desktop) */}
-            <div
-              className="
-      order-1
-      lg:order-2
-      grid grid-cols-2 gap-4
-      lg:block lg:space-y-4
-    "
-            >
-              {properties.slice(0, 4).map((item, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActive(i)}
-                  className={`w-full text-left px-4 py-3 sm:px-6 sm:py-4 border transition-all duration-300
-          ${
-            active === i
-              ? "border-[var(--primary-color)] bg-white"
-              : "border-[var(--border-color)] hover:bg-white"
-          }
-        `}
-                >
-                  <h4 className="font-heading text-sm sm:text-lg text-[var(--text-primary)]">
-                    {item.title}
-                  </h4>
-                  <p className="text-xs sm:text-sm text-[var(--text-muted)]">
-                    {item.location}
-                  </p>
-                </button>
-              ))}
+        {/* BROWSE ALL */}
+        <Link
+          href="/properties/buy"
+          className="inline-flex items-center gap-3 mt-4 text-sm text-[var(--primary-color)] font-semibold"
+        >
+          Browse All Properties
+          <span className="block w-8 h-px bg-[var(--primary-color)]" />
+        </Link>
+      </div>
+    </div>
 
-              {/* Browse link full width on mobile */}
-              <Link
-                href="/properties"
-                className="
-        col-span-2 lg:col-span-1
-        inline-flex items-center gap-2 mt-2 lg:mt-4
-        text-sm font-body text-[var(--primary-color)]
-      "
-              >
-                Browse All Properties
-                <span className="block w-6 h-px bg-[var(--primary-color)]" />
-              </Link>
-            </div>
+  </div>
+</section>
 
-            {/* IMAGE */}
-            <div
-              className="
-      order-2
-      lg:order-1
-      lg:col-span-2
-      relative
-      h-[280px] sm:h-[340px] lg:h-[420px]
-    "
-            >
-              <Image
-                key={active}
-                src={properties[active].image}
-                alt={properties[active].title}
-                fill
-                className="object-cover transition-opacity duration-500"
-              />
-
-              {/* OVERLAY */}
-              <div className="absolute inset-0 bg-black/30" />
-
-              {/* INFO */}
-              <div className="absolute bottom-5 left-5 text-white max-w-[85%]">
-                <h3 className="font-heading text-xl sm:text-2xl mb-1">
-                  {properties[active].title}
-                </h3>
-                <p className="text-xs sm:text-sm text-white/80">
-                  {properties[active].location}
-                </p>
-
-                <p className="mt-2 text-base sm:text-lg font-semibold text-[var(--primary-color)]">
-                  {properties[active].price}
-                </p>
-
-                <Link
-                  href={properties[active].link}
-                  className="inline-flex items-center gap-3 mt-3 text-sm font-body text-[var(--primary-color)]"
-                >
-                  View Property
-                  <span className="block w-8 h-px bg-[var(--primary-color)]" />
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </>
   );
 }

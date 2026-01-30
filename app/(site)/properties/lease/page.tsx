@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import WebLoader from "../../../components/WebLoader";
 
@@ -25,37 +26,35 @@ export default function LeasePropertiesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  /* SEARCH & PAGINATION */
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
-  /* IMAGE CAROUSEL STATE */
   const [currentImages, setCurrentImages] = useState<{ [key: string]: number }>({});
-  const slideIntervals = useRef<{ [key: string]: NodeJS.Timeout }>({});
+  const slideIntervals = useRef<{ [key: string]: number }>({});
 
-  /* FETCH PROPERTIES */
-  const fetchProperties = async () => {
-    try {
-      const res = await fetch(`${API_URL}/property`);
-      if (!res.ok) throw new Error("Failed to fetch lease properties");
-      const data = await res.json();
-      setProperties(data);
-    } catch (err: any) {
-      setError(err.message || "Something went wrong");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  /* FETCH */
   useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        const res = await fetch(`${API_URL}/property`);
+        if (!res.ok) throw new Error("Failed to fetch properties");
+        const data = await res.json();
+        setProperties(data);
+      } catch (err: any) {
+        setError(err.message || "Something went wrong");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchProperties();
     return () => {
       Object.values(slideIntervals.current).forEach(clearInterval);
     };
   }, []);
 
-  /* FILTER – ONLY LEASE */
+  /* FILTER */
   const filtered = properties
     .filter((p) => p.purpose === "Lease")
     .filter(
@@ -69,7 +68,7 @@ export default function LeasePropertiesPage() {
   const start = (currentPage - 1) * itemsPerPage;
   const paginated = filtered.slice(start, start + itemsPerPage);
 
-  /* IMAGE CONTROLS */
+  /* SLIDER */
   const nextImage = (id: string, length: number) => {
     setCurrentImages((prev) => ({
       ...prev,
@@ -84,10 +83,9 @@ export default function LeasePropertiesPage() {
     }));
   };
 
-  /* AUTO SLIDE */
   const startAutoSlide = (id: string, length: number) => {
     if (slideIntervals.current[id]) return;
-    slideIntervals.current[id] = setInterval(() => {
+    slideIntervals.current[id] = window.setInterval(() => {
       setCurrentImages((prev) => ({
         ...prev,
         [id]: ((prev[id] ?? 0) + 1) % length,
@@ -102,42 +100,41 @@ export default function LeasePropertiesPage() {
     }
   };
 
-  /* LOADING */
+  /* STATES */
   if (loading)
     return (
-      <div className="min-h-screen flex items-center justify-center bg-cover bg-center">
-        <div className="absolute inset-0 bg-black/60"></div>
+      <div className="min-h-screen flex items-center justify-center bg-black/60">
         <WebLoader />
       </div>
     );
 
-  if (error) return <p className="p-10 text-red-600 text-xl">{error}</p>;
+  if (error) return <p className="p-10 text-red-600">{error}</p>;
 
   return (
     <div
       className="min-h-screen bg-cover bg-center bg-fixed"
       style={{
         backgroundImage:
-          "linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('https://plus.unsplash.com/premium_photo-1724636685530-e72c4ecf8f14?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
+          "linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=1800&q=80')",
       }}
     >
       {/* HERO */}
-      <div className="relative h-64 pt-7 w-full flex items-center justify-center">
-        <h1 className="relative text-white text-3xl sm:text-5xl font-bold z-10 text-center px-4">
+      <div className="relative h-64 flex items-center justify-center">
+        <h1 className="text-white text-4xl sm:text-5xl font-bold text-center">
           Explore Premium Lease Properties
         </h1>
       </div>
 
       {/* CONTENT */}
-      <div className="max-w-[90%] px-6 sm:px-8 lg:px-12 py-12 bg-transparent rounded-3xl -mt-15 mx-6 sm:mx-auto shadow-lg border-10 border-x-amber-800">
+      <div className="max-w-[90%] mx-auto px-6 py-12 border border-white/30 rounded-3xl">
         {/* SEARCH */}
-        <div className="flex justify-center text-white mb-8">
+        <div className="flex justify-center mb-10">
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by title or location..."
-            className="w-full md:w-1/3 px-5 py-3 rounded-full border shadow text-lg focus:outline-none placeholder:text-white border-white/70 focus:ring-2 focus:ring-blue-500"
+            className="w-full md:w-1/3 px-5 py-3 rounded-full bg-transparent border border-white text-white placeholder:text-white focus:outline-none"
           />
         </div>
 
@@ -147,85 +144,82 @@ export default function LeasePropertiesPage() {
             const currentIndex = currentImages[p._id] ?? 0;
 
             return (
-              <div
+              <Link
                 key={p._id}
-                className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300"
+                href={`/properties/lease/${p.slug}`}
+                className="block"
               >
-                {/* IMAGE */}
                 <div
-                  className="relative h-64 sm:h-80"
+                  className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition cursor-pointer"
                   onMouseEnter={() => startAutoSlide(p._id, p.images.length)}
                   onMouseLeave={() => stopAutoSlide(p._id)}
                 >
-                  {p.images?.length > 0 ? (
-                    <>
-                      <img
-                        src={p.images[currentIndex]}
-                        alt={p.title}
-                        className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
-                      />
+                  {/* IMAGE */}
+                  <div className="relative h-64 sm:h-80">
+                    <img
+                      src={p.images[currentIndex]}
+                      alt={p.title}
+                      className="h-full w-full object-cover"
+                    />
 
-                      {p.images.length > 1 && (
-                        <>
-                          <button
-                            onClick={() => prevImage(p._id, p.images.length)}
-                            className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 text-white p-2 rounded-full hover:bg-black/50"
-                          >
-                            <ChevronLeft />
-                          </button>
-                          <button
-                            onClick={() => nextImage(p._id, p.images.length)}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 text-white p-2 rounded-full hover:bg-black/50"
-                          >
-                            <ChevronRight />
-                          </button>
-                        </>
-                      )}
-                    </>
-                  ) : (
-                    <div className="h-full w-full bg-gray-200 flex items-center justify-center">
-                      <span className="text-gray-500">No Image</span>
-                    </div>
-                  )}
-                </div>
+                    {p.images.length > 1 && (
+                      <>
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            prevImage(p._id, p.images.length);
+                          }}
+                          className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 text-white p-2 rounded-full"
+                        >
+                          <ChevronLeft />
+                        </button>
 
-                {/* DETAILS */}
-                <div className="p-6">
-                  <h2 className="text-2xl font-semibold mb-2 text-gray-800">{p.title}</h2>
-                  <p className="text-gray-600 mb-2">📍 {p.location}</p>
-                  <p className="text-gray-900 font-medium mb-3">
-                    {p.price ? `₹${p.price.toLocaleString()} / lease` : "Lease on request"}
-                  </p>
-                  <div className="flex gap-6 text-gray-700 text-sm sm:text-base font-medium">
-                    {p.bedrooms !== undefined && <span>🛏 {p.bedrooms}</span>}
-                    {p.bathrooms !== undefined && <span>🛁 {p.bathrooms}</span>}
-                    {p.areaSqft !== undefined && <span>📐 {p.areaSqft} sqft</span>}
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            nextImage(p._id, p.images.length);
+                          }}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 text-white p-2 rounded-full"
+                        >
+                          <ChevronRight />
+                        </button>
+                      </>
+                    )}
+                  </div>
+
+                  {/* DETAILS */}
+                  <div className="p-6">
+                    <h2 className="text-2xl font-semibold mb-1">{p.title}</h2>
+                    <p className="text-gray-600 mb-2">📍 {p.location}</p>
+                    <p className="font-medium">
+                      {p.price
+                        ? `₹${p.price.toLocaleString()} / lease`
+                        : "Lease on request"}
+                    </p>
                   </div>
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>
 
         {/* PAGINATION */}
         {totalPages > 1 && (
-          <div className="flex justify-center items-center gap-3 mt-10">
+          <div className="flex justify-center gap-4 mt-12 text-white">
             <button
               disabled={currentPage === 1}
               onClick={() => setCurrentPage((p) => p - 1)}
-              className="px-4 py-2 border rounded disabled:opacity-40"
             >
               <ChevronLeft />
             </button>
 
-            <span className="text-sm">
+            <span>
               Page {currentPage} of {totalPages}
             </span>
 
             <button
               disabled={currentPage === totalPages}
               onClick={() => setCurrentPage((p) => p + 1)}
-              className="px-4 py-2 border rounded disabled:opacity-40"
             >
               <ChevronRight />
             </button>

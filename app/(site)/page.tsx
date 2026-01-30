@@ -41,7 +41,7 @@ export default function Home() {
       <FactsStrip />
       <Testimonials />
       <ClientsStrip />
-      <QuickEnquiry />
+      {/* <QuickEnquiry /> */}
       <BlogSection />
       <FAQSection />
       <FinalCTA />

@@ -14,10 +14,10 @@ export default function FactsStrip() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           {facts.map((f, i) => (
             <div key={i}>
-              <p className="font-heading text-3xl text-[var(--primary-color)]">
+              <p className="font-heading text-4xl text-green-900">
                 {f.value}
               </p>
-              <p className="mt-2 text-sm font-body text-[var(--text-muted)]">
+              <p className="mt-2 text-lg font-body font-bold text-[var(--text-muted)]">
                 {f.label}
               </p>
             </div>
