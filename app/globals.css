@@ -57,3 +57,65 @@
 @keyframes l2 {
     100% {box-shadow: 0 0 0 40px #0000}
 }
+/* GOOEY BASE */
+.gooey-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  position: absolute;
+  cursor: pointer;
+  transition: transform 0.4s ease, opacity 0.3s ease;
+  font-size: 20px;
+}
+
+/* MAIN BUTTON */
+.main-btn {
+  background: linear-gradient(135deg, #10b981, #14b8a6);
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.5);
+  position: relative;
+  z-index: 10;
+}
+
+/* CHILD BASE */
+.child-btn {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* OPEN STATE */
+.child-btn.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* POSITIONS (UPWARD ARC) */
+.fb.open {
+  transform: translateY(-80px);
+}
+.ig.open {
+  transform: translate(-50px, -60px);
+}
+.yt.open {
+  transform: translate(50px, -60px);
+}
+.ln.open {
+  transform: translateY(-120px);
+}
+
+/* COLORS */
+.fb {
+  background: #1877f2;
+}
+.ig {
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285aeb 90%);
+}
+.yt {
+  background: #ff0000;
+}
+.ln {
+  background: #0a66c2;
+}

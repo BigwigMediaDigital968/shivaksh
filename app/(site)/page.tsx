@@ -17,6 +17,7 @@ import BlogSection from "../components/home/Blog";
 import FAQSection from "../components/home/Faq";
 import FinalCTA from "../components/FinalCta";
 
+
 export default function Home() {
   const [openPopup, setOpenPopup] = useState(false);
 
