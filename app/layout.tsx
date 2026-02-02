@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ScrollToTopButton from "@/app/components/ScrollToTopButton";
-import SocialMediaIcon from "./components/SocialMediaIcon"
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -32,7 +32,7 @@ export default function RootLayout({
 
         {/* Scroll To Top Button */}
         <ScrollToTopButton />
-        <SocialMediaIcon />
+       
       </body>
     </html>
   );

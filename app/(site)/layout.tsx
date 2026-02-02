@@ -2,7 +2,8 @@ import type { ReactNode } from "react";
 import MiniNavbar from "../components/MiniNavbar";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import ScrollToTopButton from "../components/ScrollToTopButton";
+import ScrollToTopButton from "../components/ScrollToTopButton";   
+import SocialMediaIcon from "../components/SocialMediaIcon";
 
 export default function SiteLayout({ children }: { children: ReactNode }) {
   return (
@@ -11,6 +12,7 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
       <Navbar />
       <main>{children}</main>
       <Footer />
+       <SocialMediaIcon />
       {/* <ScrollToTopButton /> */}
     </div>
   );
