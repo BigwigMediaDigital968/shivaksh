@@ -51,6 +51,7 @@ const PopupForm: React.FC<PopupFormProps> = ({ open, onClose, purpose, propertyT
             email,
             phone: phone.replace(/\D/g, ""),
             purpose: selectedPurpose,
+            propertyType:selectPropertyType,
             message,
           }),
         }
