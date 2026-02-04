@@ -26,7 +26,43 @@ interface Property {
   highlights?: string[];
   featuresAmenities?: string[];
   nearby?: string[];
+  extraHighlights?: string[];
+  googleMapUrl?: string;
+  videoLink?: string;
 }
+const getYoutubeEmbedUrl = (url?: string) => {
+  if (!url) return "";
+
+  // Already embed
+  if (url.includes("youtube.com/embed")) return url;
+
+  // watch?v=
+  if (url.includes("watch?v=")) {
+    const id = url.split("watch?v=")[1].split("&")[0];
+    return `https://www.youtube.com/embed/${id}`;
+  }
+
+  // youtu.be
+  if (url.includes("youtu.be/")) {
+    const id = url.split("youtu.be/")[1].split("?")[0];
+    return `https://www.youtube.com/embed/${id}`;
+  }
+
+  return "";
+};
+// const getGoogleMapEmbedUrl = (url?: string) => {
+//   if (!url) return "";
+
+//   // Already embed
+//   if (url.includes("google.com/maps/embed")) return url;
+
+//   // Extract place name from short or long URLs
+//   return `https://www.google.com/maps?q=${encodeURIComponent(
+//     url
+//   )}&output=embed`;
+// };
+
+
 
 export default function PropertyDetailPage() {
   const { slug } = useParams();
@@ -36,9 +72,16 @@ export default function PropertyDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  /* ================= IMAGE SLIDER ================= */
+  /* IMAGE SLIDER */
   const [currentIndex, setCurrentIndex] = useState(0);
   const sliderRef = useRef<NodeJS.Timeout | null>(null);
+
+  /* IMAGE URL FIX */
+  const getImageUrl = (img: string) => {
+    if (!img) return "";
+    if (img.startsWith("http")) return img;
+    return `${API_URL?.replace("/api", "")}/${img}`;
+  };
 
   useEffect(() => {
     if (!slug) return;
@@ -72,7 +115,7 @@ export default function PropertyDetailPage() {
     };
   }, [property]);
 
-  /* ================= ENQUIRY FORM ================= */
+  /* ENQUIRY FORM */
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -113,7 +156,7 @@ export default function PropertyDetailPage() {
     }
   };
 
-  /* ================= STATES ================= */
+  /* STATES */
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -124,16 +167,15 @@ export default function PropertyDetailPage() {
   if (error) return <p className="p-10 text-red-600">{error}</p>;
   if (!property) return null;
 
-  /* ================= UI ================= */
+  /* UI */
   return (
     <div className="bg-gray-50 pt-[90px] pb-16">
       {/* IMAGE SECTION */}
       <div className="max-w-[92%] mx-auto rounded-3xl overflow-hidden shadow-xl">
         <div className="relative h-[420px] lg:h-[520px] flex">
-          {/* MAIN IMAGE */}
           <div className="relative flex-1">
             <img
-              src={property.images[currentIndex]}
+              src={getImageUrl(property.images[currentIndex])}
               alt={property.title}
               className="w-full h-full object-cover"
             />
@@ -169,14 +211,13 @@ export default function PropertyDetailPage() {
               <button
                 key={i}
                 onClick={() => setCurrentIndex(i)}
-                className={`overflow-hidden rounded-xl border-2 ${
-                  currentIndex === i
-                    ? "border-white"
-                    : "border-transparent"
-                }`}
+                className={`overflow-hidden rounded-xl border-2 ${currentIndex === i
+                  ? "border-white"
+                  : "border-transparent"
+                  }`}
               >
                 <img
-                  src={img}
+                  src={getImageUrl(img)}
                   className="w-full h-[110px] object-cover"
                 />
               </button>
@@ -185,9 +226,8 @@ export default function PropertyDetailPage() {
         </div>
       </div>
 
-      {/* DETAILS + ENQUIRY */}
+      {/* DETAILS */}
       <div className="max-w-[92%] mx-auto mt-12 grid lg:grid-cols-3 gap-10">
-        {/* LEFT */}
         <div className="lg:col-span-2 bg-white rounded-3xl shadow-lg p-10">
           <h1 className="text-4xl font-bold mb-3">{property.title}</h1>
 
@@ -219,20 +259,34 @@ export default function PropertyDetailPage() {
             )}
           </div>
 
-          {property.highlights?.length ? (
+          {/* HIGHLIGHTS */}
+          {property.highlights?.length && (
             <section className="mb-8">
-              <h2 className="text-2xl font-semibold mb-3">
-                Key Highlights
-              </h2>
+              <h2 className="text-2xl font-semibold mb-3">Key Highlights</h2>
               <ul className="grid sm:grid-cols-2 list-disc list-inside gap-2">
                 {property.highlights.map((h, i) => (
                   <li key={i}>{h}</li>
                 ))}
               </ul>
             </section>
-          ) : null}
+          )}
 
-          {property.featuresAmenities?.length ? (
+          {/* EXTRA HIGHLIGHTS */}
+          {property.extraHighlights?.length && (
+            <section className="mb-8">
+              <h2 className="text-2xl font-semibold mb-3">
+                Extra Highlights
+              </h2>
+              <ul className="grid sm:grid-cols-2 list-disc list-inside gap-2">
+                {property.extraHighlights.map((e, i) => (
+                  <li key={i}>{e}</li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {/* AMENITIES */}
+          {property.featuresAmenities?.length && (
             <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-3">
                 Features & Amenities
@@ -243,10 +297,51 @@ export default function PropertyDetailPage() {
                 ))}
               </ul>
             </section>
-          ) : null}
+          )}
+
+          {/* NEARBY */}
+          {property.nearby?.length && (
+            <section className="mb-8">
+              <h2 className="text-2xl font-semibold mb-3">Nearby</h2>
+              <ul className="grid sm:grid-cols-2 list-disc list-inside gap-2">
+                {property.nearby.map((n, i) => (
+                  <li key={i}>{n}</li>
+                ))}
+              </ul>
+            </section>
+          )}
+          
+          {/* MAP
+          {property.googleMapUrl && (
+            <section className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">Location Map</h2>
+              <iframe
+                src={getGoogleMapEmbedUrl(property.googleMapUrl)}
+                className="w-full h-[320px] rounded-2xl border"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </section>
+          )} */}
+
+
+
+          {/* VIDEO */}
+          {property.videoLink && (
+            <section>
+              <h2 className="text-2xl font-semibold mb-4">Property Video</h2>
+              <iframe
+                src={getYoutubeEmbedUrl(property.videoLink)}
+                className="w-full h-[380px] rounded-2xl"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </section>
+          )}
+
         </div>
 
-        {/* RIGHT — ENQUIRY */}
+        {/* ENQUIRY */}
         <div className="sticky top-[110px] bg-white rounded-3xl shadow-xl p-8 h-fit">
           <h3 className="text-2xl font-bold mb-4 text-center">
             Enquire Now

@@ -2,29 +2,47 @@
 
 import { useEffect, useState } from "react";
 import AddProperty from "../../components/AddProperty";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Pencil, Trash2 } from "lucide-react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+/* TYPES */
 interface Property {
   _id: string;
   title: string;
   slug: string;
+  description: string;
+  purpose: string;
   location: string;
+  price: number;
+  bedrooms: number;
+  bathrooms: number;
+  areaSqft: number;
+  highlights: string[];
+  featuresAmenities: string[];
+  nearby: string[];
+  extraHighlights: string[];
+  googleMapUrl: string;
+  videoLink: string;
+  images: string[];
   createdAt: string;
 }
 
 export default function AdminPropertiesPage() {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [showAddForm, setShowAddForm] = useState(false);
+  const [showAddPopup, setShowAddPopup] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
-  const [images, setImages] = useState<FileList | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  /* SEARCH & PAGINATION */
+  const [editData, setEditData] = useState<any>({});
+  const [newImages, setNewImages] = useState<File[]>([]);
+  const [removedImages, setRemovedImages] = useState<string[]>([]);
+
+  /* SEARCH + PAGINATION */
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -32,7 +50,7 @@ export default function AdminPropertiesPage() {
   /* FETCH */
   const fetchProperties = async () => {
     try {
-      const res = await fetch(`${API_URL}/property/`);
+      const res = await fetch(`${API_URL}/property`);
       const data = await res.json();
       setProperties(data);
     } catch {
@@ -46,34 +64,83 @@ export default function AdminPropertiesPage() {
     fetchProperties();
   }, []);
 
-  console.log(properties);
+  /* OPEN EDIT */
+  const openEdit = (property: Property) => {
+    setSelectedProperty(property);
+    setEditData({
+      ...property,
+      highlights: property.highlights.join(", "),
+      featuresAmenities: property.featuresAmenities.join(", "),
+      nearby: property.nearby.join(", "),
+      extraHighlights: property.extraHighlights.join(", "),
+    });
+    setNewImages([]);
+    setRemovedImages([]);
+  };
 
-  /* IMAGE UPDATE (PATCH) */
-  const updateImages = async () => {
-    if (!images || !selectedProperty) return;
+  /* INPUT */
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    setEditData({ ...editData, [e.target.name]: e.target.value });
+  };
+
+  /* IMAGE */
+  const addImages = (files: FileList | null) => {
+    if (!files) return;
+    setNewImages((prev) => [...prev, ...Array.from(files)]);
+  };
+
+  const removeExistingImage = (img: string) => {
+    setRemovedImages((prev) => [...prev, img]);
+  };
+
+  const removeNewImage = (index: number) => {
+    setNewImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  /* UPDATE */
+  const updateProperty = async () => {
+    if (!selectedProperty) return;
 
     const formData = new FormData();
-    Array.from(images).forEach((img) => formData.append("images", img));
+
+    Object.entries(editData).forEach(([key, value]) => {
+      if (
+        ["highlights", "featuresAmenities", "nearby", "extraHighlights"].includes(
+          key
+        )
+      ) {
+        formData.append(
+          key,
+          String(value)
+            .split(",")
+            .map((v) => v.trim())
+            .join(",")
+        );
+      } else {
+        formData.append(key, String(value));
+      }
+    });
+
+    removedImages.forEach((img) =>
+      formData.append("removeImages", img)
+    );
+    newImages.forEach((img) => formData.append("images", img));
 
     try {
-      const res = await fetch(
-        `${API_URL}/property/${selectedProperty.slug}`,
-        {
-          method: "PATCH",
-          body: formData,
-        }
-      );
+      await fetch(`${API_URL}/property/${selectedProperty.slug}`, {
+        method: "PATCH",
+        body: formData,
+      });
 
-      if (!res.ok) throw new Error();
-
-      setSuccessMessage("Images updated successfully 🖼️");
+      toast.success("Property updated successfully ✅");
       setSelectedProperty(null);
-      setImages(null);
       fetchProperties();
-
-      setTimeout(() => setSuccessMessage(null), 3000);
     } catch {
-      alert("Image update failed");
+      toast.error("Update failed ❌");
     }
   };
 
@@ -81,12 +148,13 @@ export default function AdminPropertiesPage() {
   const deleteProperty = async (slug: string) => {
     if (!confirm("Delete this property?")) return;
 
-    await fetch(`${API_URL}/property/${slug}`, { method: "DELETE" });
-    setProperties((p) => p.filter((i) => i.slug !== slug));
-    setSelectedProperty(null);
-    setSuccessMessage("Property deleted successfully ✅");
-
-    setTimeout(() => setSuccessMessage(null), 3000);
+    try {
+      await fetch(`${API_URL}/property/${slug}`, { method: "DELETE" });
+      toast.success("Property deleted ❌");
+      fetchProperties();
+    } catch {
+      toast.error("Delete failed");
+    }
   };
 
   /* FILTER */
@@ -96,157 +164,346 @@ export default function AdminPropertiesPage() {
       p.location.toLowerCase().includes(search.toLowerCase())
   );
 
-  /* PAGINATION */
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
-  const start = (currentPage - 1) * itemsPerPage;
-  const paginated = filtered.slice(start, start + itemsPerPage);
+  const paginated = filtered.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
-  if (loading) return <p className="p-10 text-xl">Loading...</p>;
-  if (error) return <p className="p-10 text-red-600 text-xl">{error}</p>;
+  if (loading) return <p className="p-10">Loading...</p>;
+  if (error) return <p className="p-10 text-red-600">{error}</p>;
+
+  const getImageUrl = (img: string) => {
+    if (!img) return "";
+    if (img.startsWith("http")) return img;
+
+    // handles cases where API_URL = http://localhost:5000/api
+    return `${API_URL}.replace("/api", "")}/${img}`;
+  };
 
   return (
-    <div className="min-h-screen p-8 bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen p-8 bg-slate-100">
+      <ToastContainer position="top-center" />
 
       {/* HEADER */}
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-4xl font-bold">Admin Properties</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Admin Properties</h1>
         <button
-          onClick={() => setShowAddForm(!showAddForm)}
-          className="px-6 py-3 text-lg rounded-full text-white
-                     bg-gradient-to-r from-green-600 to-emerald-500 shadow"
+          onClick={() => setShowAddPopup(true)}
+          className="px-6 py-3 bg-green-600 text-white rounded-full"
         >
-          {showAddForm ? "Close" : "+ Add Property"}
+          + Add Property
         </button>
       </div>
 
       {/* SEARCH */}
-      {!showAddForm && (
-        <input
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setCurrentPage(1);
-          }}
-          placeholder="Search title or location..."
-          className="mb-6 w-full md:w-1/3 px-5 py-3 text-lg rounded-full border shadow"
-        />
-      )}
-
-      {/* ADD FORM */}
-      {showAddForm && (
-        <div className="bg-white p-6 rounded-2xl shadow mb-6">
-          <AddProperty />
-        </div>
-      )}
+      <input
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search property..."
+        className="mb-6 px-5 py-3 w-full md:w-1/3 rounded-full border"
+      />
 
       {/* TABLE */}
-      {!showAddForm && (
-        <div className="bg-white rounded-2xl shadow overflow-hidden">
-          <table className="w-full text-lg">
-            <thead className="bg-gradient-to-r from-green-700 to-emerald-600 text-white">
-              <tr>
-                <th className="p-4 text-left">Title</th>
-                <th className="p-4 text-left">Location</th>
-                <th className="p-4 text-center">Created</th>
-                <th className="p-4 text-center">Actions</th>
+      <div className="bg-white rounded-xl shadow">
+        <table className="w-full">
+          <thead className="bg-green-700 text-white">
+            <tr>
+              <th className="p-4 text-left">Title</th>
+              <th className="p-4 text-left">Location</th>
+              <th className="p-4 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {paginated.map((p) => (
+              <tr key={p._id} className="border-t">
+                <td className="p-4 font-semibold">{p.title}</td>
+                <td className="p-4">{p.location}</td>
+                <td className="p-4 text-center flex justify-center gap-3">
+                  <button
+                    onClick={() => openEdit(p)}
+                    className="px-3 py-2 bg-blue-600 text-white rounded flex items-center gap-1"
+                  >
+                    <Pencil size={16} /> Edit
+                  </button>
+                  <button
+                    onClick={() => deleteProperty(p.slug)}
+                    className="px-3 py-2 bg-red-600 text-white rounded flex items-center gap-1"
+                  >
+                    <Trash2 size={16} /> Delete
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {paginated.map((p) => (
-                <tr key={p._id} className="border-t hover:bg-slate-50">
-                  <td className="p-4 font-semibold">{p.title}</td>
-                  <td className="p-4">{p.location}</td>
-                  <td className="p-4 text-center">
-                    {new Date(p.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="p-4 text-center">
-                    <button
-                      onClick={() => setSelectedProperty(p)}
-                      className="text-green-700 font-bold hover:underline"
-                    >
-                      Manage
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-      {/* PAGINATION (DESKTOP + MOBILE) */}
-          {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-3 mt-10">
-              <button
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage((p) => p - 1)}
-                className="px-4 py-2 border rounded disabled:opacity-40"
-              >
-                <ChevronLeft />
-              </button>
-
-              <span className="text-sm">
-                Page {currentPage} of {totalPages}
-              </span>
-
-              <button
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage((p) => p + 1)}
-                className="px-4 py-2 border rounded disabled:opacity-40"
-              >
-                <ChevronRight />
-              </button>
-            </div>
-          )}
-      {/* TOAST */}
-      {successMessage && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2
-                        bg-green-600 text-white px-6 py-3
-                        text-lg rounded-xl shadow">
-          {successMessage}
-        </div>
-      )}
-
-      {/* MODAL – IMAGE ONLY */}
-      {selectedProperty && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md">
-            <h2 className="text-2xl font-bold mb-2">Update Images</h2>
-            <p className="mb-4 text-gray-600">{selectedProperty.title}</p>
-
-            <input
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={(e) => setImages(e.target.files)}
-              className="mb-4 text-lg"
-            />
-
-            <div className="flex gap-3">
-              <button
-                onClick={updateImages}
-                className="flex-1 bg-blue-600 text-white py-3 rounded-lg text-lg"
-              >
-                Update Images
-              </button>
-
-              <button
-                onClick={() => deleteProperty(selectedProperty.slug)}
-                className="flex-1 bg-red-600 text-white py-3 rounded-lg text-lg"
-              >
-                Delete
-              </button>
-            </div>
-
+      {/* ADD PROPERTY POPUP */}
+      {showAddPopup && (
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex justify-center p-6"
+          onClick={() => setShowAddPopup(false)}
+        >
+          <div
+            className="bg-white w-full max-w-5xl rounded-3xl relative max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
-              onClick={() => setSelectedProperty(null)}
-              className="mt-4 w-full border py-2 rounded-lg text-lg"
+              onClick={() => setShowAddPopup(false)}
+              className="absolute top-4 right-4 text-white"
             >
-              Cancel
+              <X />
             </button>
+            <AddProperty />
           </div>
         </div>
       )}
+
+      {/* EDIT POPUP */}
+      {/* EDIT PROPERTY POPUP */}
+      {selectedProperty && (
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex justify-center p-6"
+          onClick={() => setSelectedProperty(null)}
+        >
+          <div
+            className="bg-white w-full max-w-4xl rounded-3xl p-6 max-h-[90vh] overflow-y-auto relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* CLOSE */}
+            <button
+              onClick={() => setSelectedProperty(null)}
+              className="absolute top-4 right-4 "
+            >
+              <X />
+            </button>
+
+            <h2 className="text-2xl font-bold mb-6">Edit Property</h2>
+
+            {/* BASIC DETAILS */}
+            <h3 className="text-lg font-semibold mb-3">Basic Details</h3>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <h3 className="text-lg font-semibold mt-6 mb-3">Title</h3>
+                <textarea
+                  name="title"
+                  value={editData.title || ""}
+                  onChange={handleChange}
+                  className="w-full border p-0.5 rounded-l"
+                />
+              </div>
+
+
+              <div>
+                <h3 className="text-lg font-semibold mt-6 mb-3">Location</h3>
+                <textarea
+                  name="location"
+                  value={editData.location || ""}
+                  onChange={handleChange}
+                  className="w-full border p-0.5 rounded-l"
+                />
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold mt-6 mb-3">Purpose</h3>
+                <select
+                  name="purpose"
+                  value={editData.purpose || "Buy"}
+                  onChange={handleChange}
+                  className="w-[70%] border p-2"
+                >
+                  <option value="Buy">Buy</option>
+                  <option value="Rent">Rent</option>
+                  <option value="Lease">Lease</option>
+                </select>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold mt-6 mb-3">Price</h3>
+                <textarea
+                  name="price"
+                  value={editData.price || ""}
+                  onChange={handleChange}
+                  className="w-full border p-0.5 rounded-l"
+                />
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold mt-6 mb-3">Bedrooms</h3>
+                <textarea
+                  name="bedrooms"
+                  value={editData.bedrooms || ""}
+                  onChange={handleChange}
+                  className="w-full border p-0.5 rounded-l"
+                />
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold mt-6 mb-3">Bathrooms</h3>
+                <textarea
+                  name="bathrooms"
+                  value={editData.bathrooms || ""}
+                  onChange={handleChange}
+                  className="w-full border p-0.5 rounded-l"
+                />
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold mt-6 mb-3">Area (sqft)</h3>
+                <textarea
+                  name="areaSqft"
+                  value={editData.areaSqft || ""}
+                  onChange={handleChange}
+                  className="w-full border p-0.5 rounded-l"
+                />
+              </div>
+            </div>
+
+            {/* DESCRIPTION */}
+            <h3 className="text-lg font-semibold mt-6 mb-3">Description</h3>
+            <textarea
+              name="description"
+              value={editData.description || ""}
+              onChange={handleChange}
+              className="w-full border p-3 rounded-lg"
+            />
+
+            {/* AMENITIES & FEATURES */}
+
+            <div className="space-y-3">
+              <div>
+                <h3 className="text-lg font-semibold mt-6 mb-3">Highlights</h3>
+                <textarea
+                  name="highlights"
+                  value={editData.highlights || ""}
+                  onChange={handleChange}
+                  className="w-100 border p-0.5 rounded-lg"
+                />
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold mt-6 mb-3">Features & Amenities</h3>
+                <input
+                  name="featuresAmenities"
+                  value={editData.featuresAmenities || ""}
+                  onChange={handleChange}
+                  placeholder="Comma separated"
+                  className="w-100 border p-0.5 rounded-lg"
+                />
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold mt-6 mb-3">Nearby</h3>
+                <input
+                  name="nearby"
+                  value={editData.nearby || ""}
+                  onChange={handleChange}
+                  placeholder="Comma separated"
+                  className="w-100 border p-0.5 rounded-lg"
+                />
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold mt-6 mb-3">Extra Highlights</h3>
+                <input
+                  name="extraHighlights"
+                  value={editData.extraHighlights || ""}
+                  onChange={handleChange}
+                  placeholder="Comma separated"
+                  className="w-100 border p-0.5 rounded-lg"
+                />
+              </div>
+
+              
+            <div>
+              <h3 className="text-lg font-semibold mt-6 mb-3">Google Map URL</h3>
+              <input
+                name="googleMapUrl"
+                value={editData.googleMapUrl || ""}
+                onChange={handleChange}
+                className="w-100 border p-0.5 rounded-lg"
+              />
+            </div>
+
+
+            <div>
+              <label className="text-lg font-semibold mt-6 mb-3">Video Link </label>
+              <input
+                name="videoLink"
+                value={editData.videoLink || ""}
+                onChange={handleChange}
+                className="w-100 border p-0.5 rounded-lg"
+              />
+            </div>
+            </div>
+
+            {/* MAP & VIDEO */}
+
+
+
+
+            {/* EXISTING IMAGES */}
+            <h3 className="text-lg font-semibold mt-6 mb-3">Existing Images</h3>
+            <div className="grid grid-cols-4 gap-3">
+              {selectedProperty.images
+                .filter((img) => !removedImages.includes(img))
+                .map((img) => (
+                  <div key={img} className="relative">
+                    <img
+                      src={getImageUrl(img)}
+                      className="h-28 w-full object-cover rounded"
+                    />
+                    <button
+                      onClick={() => removeExistingImage(img)}
+                      className="absolute top-1 right-1 bg-black/70 text-white px-2 rounded"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+            </div>
+
+            {/* ADD NEW IMAGES */}
+            <h3 className="text-lg font-semibold mt-6 mb-3">Add New Images</h3>
+            <input
+              type="file"
+              multiple
+              onChange={(e) => addImages(e.target.files)}
+            />
+
+            <div className="grid grid-cols-4 gap-3 mt-3">
+              {newImages.map((img, i) => (
+                <div key={i} className="relative">
+                  <img
+                    src={URL.createObjectURL(img)}
+                    className="h-28 w-full object-cover rounded"
+                  />
+                  <button
+                    onClick={() => removeNewImage(i)}
+                    className="absolute top-1 right-1 bg-black/70 text-white px-2 rounded"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            {/* ACTIONS */}
+            <div className="flex justify-end gap-4 mt-8">
+              <button
+                onClick={updateProperty}
+                className="px-6 py-3 bg-green-600 text-white rounded-lg"
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
     </div>
   );
 }
