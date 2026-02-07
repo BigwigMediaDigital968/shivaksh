@@ -25,6 +25,8 @@ interface Lead {
   createdAt: string;
 }
 
+
+
 const ITEMS_PER_PAGE = 8;
 
 export default function AdminLeadsPage() {

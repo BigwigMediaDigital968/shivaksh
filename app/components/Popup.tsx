@@ -198,7 +198,7 @@ const PopupForm: React.FC<PopupFormProps> = ({ open, onClose, purpose, propertyT
                 value={phone}
                 onChange={setPhone}
                 containerClass="w-full"
-                inputClass="!w-full !h-[50px] !rounded-xl !border !border-gray-300"
+                inputClass="!w-full !h-[50px] !rounded-xl !border !border-gray-300 text-black"
               />
 
               <input
