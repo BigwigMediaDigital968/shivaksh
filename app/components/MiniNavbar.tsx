@@ -19,7 +19,7 @@ export default function MiniNavbar() {
         <div className="flex items-center">
           <div className="flex items-center gap-2">
             <MapPin size={14} />
-            <span>Gurgaon, Haryana</span>
+            <span>Bellowala,Main Dunga Road,Vikasnagar Dehradun</span>
           </div>
 
           {/* DIVIDER */}
@@ -27,7 +27,7 @@ export default function MiniNavbar() {
 
           <div className="flex items-center gap-2">
             <Phone size={14} />
-            <span>+91 1234567890</span>
+            <span>+91 9910117510</span>
           </div>
         </div>
 
@@ -39,7 +39,7 @@ export default function MiniNavbar() {
             className="flex items-center gap-2 hover:text-[var(--primary-color)] transition"
           >
             <Mail size={14} />
-            <span>info@shivaksh.com</span>
+            <span>shivakshrealestate@gmail.com</span>
           </Link>
 
           {/* DIVIDER */}
@@ -48,7 +48,7 @@ export default function MiniNavbar() {
           {/* SOCIAL ICONS */}
           <div className="flex items-center gap-4">
             <Link
-              href="#"
+              href="https://www.instagram.com/shivakshrealestatedehradun?igsh=emxqZ2pmMWg2eWhk"
               className="hover:text-pink-500 transition"
               aria-label="Instagram"
             >

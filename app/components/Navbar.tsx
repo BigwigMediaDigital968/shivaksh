@@ -228,7 +228,7 @@ export default function Navbar() {
             {/* PHONE */}
             <div className="mt-8 flex items-center gap-3 text-sm border-t border-white/20 pt-4">
               <Phone size={16} />
-              <span>+91 9811556625</span>
+              <span>+91 9910117510</span>
             </div>
           </nav>
         </aside>
